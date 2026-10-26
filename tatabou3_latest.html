@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#183b56">
+<title>تتبع سير الدروس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5f9;--card:#fff;--ink:#14202e;--muted:#6b7a8c;--line:#e5eaf0;--track:#e6ebf1;--soft:#eef3f8;
+  --p:#1d4f73;--p2:#1f7a86;--ok:#16a34a;--okbg:#e5f6ec;--warn:#b45309;--warnbg:#fff3dc;--bad:#c62828;--badbg:#fdeaea;
+  --l3:#4f46e5;--l3bg:#eceafd;--l2:#0d9488;--l2bg:#dcf5f2;--shadow:0 6px 22px rgba(20,32,46,.07);--r:18px;
+}
+[data-theme=dark]{
+  --bg:#0d131a;--card:#17202a;--ink:#e8eef4;--muted:#93a1b1;--line:#263341;--track:#2a3746;--soft:#1e2a37;
+  --p:#6fb4dd;--p2:#43c6cb;--ok:#4ade80;--okbg:#15301f;--warn:#fbbf24;--warnbg:#33290f;--bad:#f87171;--badbg:#391a1a;
+  --l3:#a5a0ff;--l3bg:#25234a;--l2:#5eead4;--l2bg:#12312e;--shadow:0 6px 22px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Tajawal,"Segoe UI",Tahoma,Arial,sans-serif;font-size:15px;line-height:1.55;transition:background .25s,color .25s}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{border:0;cursor:pointer;transition:transform .12s,filter .15s,background .2s}
+button:active{transform:scale(.96)}
+h1,h2,h3,h4,p{margin:0}
+.hidden{display:none!important}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#183b56,#1f7a86);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 16px;display:flex;align-items:center;justify-content:space-between;border-radius:0 0 26px 26px;box-shadow:0 8px 24px rgba(24,59,86,.25)}
+.top h1{font-size:20px;font-weight:800}
+.top p{font-size:12px;opacity:.85;margin-top:2px}
+.iconbtn{width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.16);color:#fff;font-size:19px}
+main{max-width:760px;margin:0 auto;padding:16px 14px 130px}
+#view{animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* cards */
+.card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card h3{font-size:16px;font-weight:800}
+.sec-title{display:flex;align-items:center;justify-content:space-between;margin:18px 4px 10px}
+.sec-title h3{font-size:16px;font-weight:800}
+.muted{color:var(--muted)}.small{font-size:12.5px;color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center}
+.row.sb{justify-content:space-between}
+.grow{flex:1;min-width:0}
+
+/* buttons */
+.btn{padding:12px 16px;border-radius:14px;font-weight:700;background:var(--soft);color:var(--p)}
+.btn.primary{background:linear-gradient(135deg,#1d4f73,#1f7a86);color:#fff;box-shadow:0 6px 16px rgba(29,79,115,.3)}
+.btn.light{background:#fff;color:#183b56}
+.btn.danger{background:var(--badbg);color:var(--bad)}
+.btn.sm{padding:8px 12px;font-size:13px;border-radius:11px}
+.btn.block{width:100%}
+
+/* hero */
+.hero{background:linear-gradient(135deg,#183b56 0%,#1f7a86 100%);color:#fff;border-radius:22px;padding:18px;margin-bottom:14px;box-shadow:0 12px 28px rgba(24,59,86,.28);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;left:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero .pill{display:inline-block;background:rgba(255,255,255,.18);padding:3px 11px;border-radius:20px;font-size:12px;font-weight:700}
+.hero .pill.live{background:#22c55e;animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.7}}
+.hero h2{font-size:34px;font-weight:800;margin:8px 0 0}
+.hero .tm{opacity:.9;font-size:14px}
+.hero .nx{font-size:13px;opacity:.95;margin:8px 0 12px;background:rgba(255,255,255,.12);padding:8px 10px;border-radius:12px}
+.hello{font-size:13px;opacity:.9;margin-bottom:8px}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:14px}
+.stat{background:var(--card);border-radius:16px;padding:12px 6px;text-align:center;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:22px;font-weight:800;color:var(--p)}
+.stat span{font-size:11.5px;color:var(--muted)}
+.stat.bad b{color:var(--bad)}
+
+/* timeline */
+.tl{position:relative;padding-right:18px}
+.tl:before{content:"";position:absolute;right:5px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tli{position:relative;background:var(--soft);border-radius:14px;padding:11px 12px;margin-bottom:9px;display:flex;align-items:center;gap:10px}
+.tli:before{content:"";position:absolute;right:-18px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--card);border:3px solid var(--track)}
+.tli.now{background:var(--l3bg);outline:2px solid var(--p)}
+.tli.now:before{border-color:var(--ok)}
+.tli.past{opacity:.55}
+.tli .t{font-size:12.5px;color:var(--muted);white-space:nowrap}
+
+/* badges & chips */
+.badge{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.b-ok{background:var(--okbg);color:var(--ok)}.b-warn{background:var(--warnbg);color:var(--warn)}.b-bad{background:var(--badbg);color:var(--bad)}.b-idle{background:var(--soft);color:var(--muted)}
+.lvchip{display:inline-block;font-weight:800;font-size:12px;padding:2px 9px;border-radius:9px}
+.lv3{background:var(--l3bg);color:var(--l3)}.lv2{background:var(--l2bg);color:var(--l2)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:8px 14px;border-radius:20px;background:var(--soft);color:var(--muted);font-weight:700;font-size:13.5px}
+.chip.on{background:var(--p);color:#fff}
+[data-theme=dark] .chip.on{color:#0d131a}
+
+/* section card */
+.scard{display:flex;align-items:center;gap:13px;width:100%;text-align:right;background:var(--card);border-radius:var(--r);padding:13px;margin-bottom:11px;box-shadow:var(--shadow);border-right:5px solid var(--track)}
+.scard.s-ok{border-right-color:var(--ok)}.scard.s-warn{border-right-color:#f59e0b}.scard.s-bad{border-right-color:var(--bad)}
+.scard h4{font-size:16px;font-weight:800}
+.scard .l1{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:3px}
+.scard .ln{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ring{flex:none}.ringtxt{font-weight:800;fill:var(--ink)}
+
+/* progress bar with expected tick */
+.bar{position:relative;height:10px;background:var(--track);border-radius:20px;margin:12px 0 6px}
+.bar .fill{height:100%;border-radius:20px;background:linear-gradient(90deg,#1f7a86,#16a34a);transition:width .6s}
+.bar .tick{position:absolute;top:-4px;width:3px;height:18px;border-radius:3px;background:var(--warn)}
+
+/* segmented */
+.seg{display:flex;background:var(--soft);border-radius:14px;padding:4px;margin-bottom:14px}
+.seg button{flex:1;padding:10px;border-radius:11px;background:transparent;font-weight:700;color:var(--muted)}
+.seg button.on{background:var(--card);color:var(--p);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+
+/* form */
+label{display:block;font-size:13px;font-weight:700;margin:13px 0 0;color:var(--muted)}
+input,select,textarea{width:100%;padding:12px;margin-top:6px;border:1.5px solid var(--line);border-radius:13px;background:var(--card);color:var(--ink);outline:none;transition:border-color .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--p2)}
+input[type=range]{padding:0;accent-color:var(--p2);border:0}
+input[type=file]{display:none}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.search{position:relative;margin-bottom:10px}
+.search input{margin:0;padding-right:40px;border-radius:16px}
+.search:before{content:"🔍";position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:15px;opacity:.6}
+
+/* day pills */
+.days{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day{flex:none;min-width:64px;padding:10px 8px;border-radius:16px;background:var(--card);box-shadow:var(--shadow);color:var(--ink);font-weight:700;font-size:13px;text-align:center}
+.day i{display:block;font-style:normal;font-size:11.5px;color:var(--muted);margin-top:2px}
+.day.today{outline:2px dashed var(--p2)}
+.day.on{background:linear-gradient(135deg,#1d4f73,#1f7a86);color:#fff}.day.on i{color:#dbeafe}
+
+/* slot card */
+.slotc{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:var(--r);padding:12px;margin-bottom:10px;box-shadow:var(--shadow)}
+.slotc .time{flex:none;text-align:center;background:var(--soft);border-radius:13px;padding:8px 10px;font-weight:800;font-size:14px;line-height:1.3;color:var(--p)}
+.slotc .time small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+
+/* topic rows */
+.trow{display:flex;align-items:center;gap:11px;padding:11px 4px;border-bottom:1px solid var(--line)}
+.trow:last-child{border-bottom:0}
+.check{flex:none;width:34px;height:34px;border-radius:50%;background:var(--soft);color:var(--muted);font-size:17px;font-weight:800;border:2px solid var(--track)}
+.trow.done .check{background:var(--ok);border-color:var(--ok);color:#fff}
+.trow.part .check{background:var(--warnbg);border-color:#f59e0b;color:var(--warn)}
+.trow.done .tt{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+.tmain{flex:1;min-width:0;cursor:pointer;background:transparent;text-align:right;padding:0}
+.tt{font-weight:700}
+.nextflag{background:var(--l3bg);color:var(--l3);font-size:11px;padding:2px 8px;border-radius:10px;margin-right:6px;font-weight:800}
+.grp{font-weight:800;padding:10px 4px 4px}.grp.g1{color:var(--p2);font-size:14px;margin-top:6px}.grp.g2{color:var(--muted);font-size:12.5px;border-top:1px dashed var(--line)}
+.num{flex:none;width:28px;text-align:center;color:var(--muted);font-weight:700;font-size:13px}
+.mini{display:flex;gap:6px}
+.mini button{width:34px;height:34px;border-radius:10px;background:var(--soft);color:var(--p);font-weight:800}
+.mini button.d{color:var(--bad);background:var(--badbg)}
+.mini button[disabled]{opacity:.3}
+
+/* history */
+.hist{border-bottom:1px solid var(--line);padding:12px 2px}
+.hist:last-child{border-bottom:0}
+
+/* import dropzone */
+.drop{display:block;border:2px dashed var(--track);border-radius:16px;padding:18px;text-align:center;cursor:pointer;background:var(--soft);transition:.2s;margin-top:10px}
+.drop.over,.drop:hover{border-color:var(--p2);background:var(--l2bg)}
+.drop b{display:block;font-size:15px;margin-bottom:3px}
+.prev{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.prevblk{background:var(--soft);border-radius:13px;padding:10px 12px;margin:8px 0}
+.alert{border-radius:14px;padding:12px;margin-top:10px;font-size:13.5px}
+.alert.warn{background:var(--warnbg);color:var(--warn)}.alert.bad{background:var(--badbg);color:var(--bad)}
+
+/* tab bar */
+.tabbar{position:fixed;bottom:calc(12px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(520px,calc(100% - 20px));background:var(--card);border-radius:26px;box-shadow:0 10px 34px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:space-around;padding:8px 6px;z-index:30;border:1px solid var(--line)}
+.tab{flex:1;background:transparent;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;font-weight:700;padding:6px 0;border-radius:16px}
+.tab svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--p)}
+.tab.on svg{stroke-width:2.4}
+.fab{flex:none;width:56px;height:56px;margin-top:-30px;border-radius:50%;background:linear-gradient(135deg,#1d4f73,#1f7a86);color:#fff;box-shadow:0 8px 20px rgba(29,79,115,.45);display:grid;place-items:center;border:4px solid var(--bg)}
+.fab svg{width:26px;height:26px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round}
+
+/* sheet */
+#sheet{position:fixed;inset:0;background:rgba(10,20,30,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(3px)}
+#sheet.open{opacity:1;pointer-events:auto}
+#sheetBody{background:var(--card);width:min(560px,100%);max-height:92vh;overflow-y:auto;border-radius:26px 26px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+#sheet.open #sheetBody{transform:none}
+.grab{width:44px;height:5px;border-radius:5px;background:var(--track);margin:0 auto 14px}
+#sheetBody h3{font-size:18px;font-weight:800;margin-bottom:4px}
+.actions{display:flex;gap:10px;margin-top:18px}.actions .btn{flex:1}
+
+/* toast */
+#toast{position:fixed;bottom:104px;left:50%;transform:translateX(-50%) translateY(20px);background:#14202e;color:#fff;padding:11px 16px;border-radius:16px;z-index:60;opacity:0;pointer-events:none;transition:.25s;display:flex;gap:14px;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:calc(100% - 30px)}
+#toast.show{opacity:1;transform:translateX(-50%);pointer-events:auto}
+#toast button{background:transparent;color:#7dd3fc;font-weight:800;padding:0}
+.empty{text-align:center;padding:26px 10px;color:var(--muted)}
+.empty .big{font-size:38px;margin-bottom:6px}
+.back{background:var(--soft);color:var(--p);width:40px;height:40px;border-radius:13px;font-size:18px;font-weight:800}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:380px){.stats{grid-template-columns:repeat(2,1fr)}.hero h2{font-size:28px}}
+
+/* Responsive adaptation: phone, tablet, laptop and wide desktop */
+img,svg,video,canvas{max-width:100%;height:auto}
+button,input,select,textarea{max-width:100%;min-width:0}
+input,select,textarea{font-size:16px}
+.top{gap:12px;flex-wrap:wrap}
+.top>div:first-child{min-width:0;flex:1}
+.top h1{overflow-wrap:anywhere}
+main{width:100%;max-width:1180px;padding-inline:clamp(12px,2.2vw,28px)}
+#view{min-width:0}
+.card,.hero,.scard,.slotc,.tli{min-width:0}
+.scard{overflow-wrap:anywhere}
+.scard .ln{white-space:normal}
+@media(min-width:700px){
+  main{padding-top:24px;padding-bottom:120px}
+  .hero{padding:26px 30px}
+  .hero h2{font-size:38px}
+  .stats{gap:14px}
+  .stat{padding:18px 12px}
+  .stat b{font-size:28px}
+  .tabbar{width:min(760px,calc(100% - 40px));padding:10px 12px}
+  .tab{font-size:13px;gap:5px}
+  .tab svg{width:25px;height:25px}
+  .card{padding:22px}
+  .scard{padding:17px;gap:17px}
+  .scard h4{font-size:18px}
+  .two{gap:16px}
+}
+@media(min-width:1000px){
+  main{max-width:1320px;padding-inline:32px}
+  .tabbar{bottom:18px;width:min(820px,calc(100% - 64px));border-radius:20px}
+  #view{font-size:16px}
+  .stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+  .hero{border-radius:26px}
+  .days,.chips{flex-wrap:wrap;overflow-x:visible}
+  .scard .ln{white-space:normal}
+  .slotc{padding:16px 18px}
+}
+@media(max-width:520px){
+  .top{padding-inline:14px}
+  .top h1{font-size:18px}
+  .top p{font-size:11px}
+  main{padding-inline:10px;padding-top:12px}
+  .card{padding:13px}
+  .hero{padding:16px}
+  .stats{gap:8px}
+  .stat{padding:10px 5px}
+  .stat b{font-size:21px}
+  .two{grid-template-columns:minmax(0,1fr)}
+  .actions{flex-wrap:wrap}
+  .actions .btn{min-width:110px}
+  .tabbar{width:calc(100% - 12px);bottom:calc(6px + env(safe-area-inset-bottom));padding:6px 3px}
+  .tab{font-size:10px}
+  .tab svg{width:21px;height:21px}
+  .fab{width:50px;height:50px}
+  .slotc{gap:8px;padding:10px}
+  .slotc .time{padding:7px}
+  .mini{flex-wrap:wrap}
+  .trow{gap:8px}
+  .tt{overflow-wrap:anywhere}
+  #sheetBody{padding-inline:14px}
+}
+@media(hover:hover) and (pointer:fine){.scard:hover,.slotc:hover{filter:brightness(.99);transform:translateY(-1px)}}
+
+/* official events */
+.evi{display:flex;gap:11px;align-items:center;width:100%;text-align:right;background:var(--soft);border-radius:14px;padding:11px;margin-top:9px;border-right:4px solid var(--track)}
+.evi.soon{border-right-color:#f59e0b}.evi.now{border-right-color:var(--bad);background:var(--badbg)}.evi.done{opacity:.6;border-right-color:var(--ok)}.evi.past{opacity:.55}
+.evi b{font-size:14px;line-height:1.45;display:block}
+.evic{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:19px}
+.evr{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex:none}.evr small{font-size:11px;color:var(--muted)}
+.evdot{position:absolute;bottom:3px;left:50%;margin-left:-3px;width:6px;height:6px;border-radius:50%;background:var(--bad)}
+
+/* ===== UI polish v2: interactivity + adaptive layout (sidebar on the left for desktop) ===== */
+:root{--side:248px;--ease:cubic-bezier(.2,.8,.2,1)}
+:focus{outline:none}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--p2) 55%,transparent);outline-offset:2px;border-radius:12px}
+html{-webkit-text-size-adjust:100%}
+body{min-height:100dvh;overflow-x:hidden}
+button{touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.top{transition:padding .25s var(--ease),box-shadow .25s,border-radius .25s}
+.top.compact{padding-top:calc(8px + env(safe-area-inset-top));padding-bottom:9px;box-shadow:0 4px 16px rgba(24,59,86,.3)}
+.top.compact p{display:none}
+.iconbtn{display:grid;place-items:center;transition:background .2s,transform .15s}
+.iconbtn:hover{background:rgba(255,255,255,.28)}
+.iconbtn:active{transform:scale(.92) rotate(-6deg)}
+
+/* cards: entrance + hover */
+#view>*{animation:rise .45s var(--ease) both}
+#view>*:nth-child(2){animation-delay:.04s}#view>*:nth-child(3){animation-delay:.08s}#view>*:nth-child(4){animation-delay:.12s}
+#view>*:nth-child(5){animation-delay:.16s}#view>*:nth-child(6){animation-delay:.2s}#view>*:nth-child(n+7){animation-delay:.24s}
+@keyframes rise{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+.card,.scard,.slotc,.stat,.day,.chip,.btn,.evi,.tli{transition:transform .18s var(--ease),box-shadow .2s,background .2s,filter .2s,border-color .2s}
+.scard:active,.slotc:active,.evi:active,.day:active,.chip:active{transform:scale(.98)}
+.btn:hover{filter:brightness(1.06)}
+.btn.primary:hover{box-shadow:0 8px 20px rgba(29,79,115,.4)}
+.chip:hover{filter:brightness(.97)}
+.check{transition:transform .2s var(--ease),background .2s}
+.check:active{transform:scale(1.2)}
+.bar .fill{transition:width .8s var(--ease)}
+.scrolltop{position:fixed;left:16px;bottom:calc(92px + env(safe-area-inset-bottom));width:44px;height:44px;border-radius:50%;background:var(--card);color:var(--p);box-shadow:var(--shadow);border:1px solid var(--line);font-size:18px;font-weight:800;z-index:25;opacity:0;transform:translateY(12px) scale(.8);pointer-events:none;transition:.25s var(--ease)}
+.scrolltop.show{opacity:1;transform:none;pointer-events:auto}
+
+/* sheet: swipe-friendly, dvh aware */
+#sheetBody{max-height:92dvh;overscroll-behavior:contain}
+.grab{cursor:grab;padding:0;touch-action:none}
+#sheetBody.dragging{transition:none}
+
+/* sidebar brand + fab label (hidden on small screens) */
+.brand,.fablbl{display:none}
+
+/* tablet: 2 columns for lists */
+@media(min-width:700px){
+  #secList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px}
+  #secList>.empty{grid-column:1/-1}
+  .scard{margin-bottom:12px}
+}
+
+/* short landscape phones: compact bottom bar */
+@media(max-height:480px) and (orientation:landscape) and (max-width:999px){
+  .top{position:static}
+  .tabbar{padding:3px 6px}.tab{flex-direction:row;gap:6px;font-size:12px}
+  .fab{margin-top:-16px;width:44px;height:44px}
+  main{padding-bottom:90px}
+}
+
+/* ================= DESKTOP: sidebar on the RIGHT ================= */
+@media(min-width:1000px){
+  body{padding-right:var(--side)}
+  .tabbar{
+    position:fixed;top:0;bottom:0;right:0;left:auto;transform:none;width:var(--side);
+    border-radius:0;border:0;border-left:1px solid var(--line);box-shadow:-6px 0 28px rgba(20,32,46,.07);
+    flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;padding:22px 14px;z-index:40;overflow-y:auto
+  }
+  .brand{display:flex;align-items:center;gap:11px;padding:4px 8px 18px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+  .brand i{font-style:normal;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;font-size:22px;background:linear-gradient(135deg,#1d4f73,#1f7a86);box-shadow:0 6px 16px rgba(29,79,115,.3)}
+  .brand b{display:block;font-size:16px;font-weight:800;line-height:1.3}
+  .brand span{font-size:12px;color:var(--muted)}
+  .tab{flex:none;flex-direction:row;justify-content:flex-start;gap:13px;padding:13px 14px;font-size:15px;border-radius:14px;text-align:right;position:relative;order:0}
+  .tab svg{width:22px;height:22px;flex:none}
+  .tab:hover{background:var(--soft);color:var(--ink)}
+  .tab.on{background:var(--l2bg);color:var(--p)}
+  .tab.on:after{content:"";position:absolute;right:0;top:22%;bottom:22%;width:4px;border-radius:4px 0 0 4px;background:var(--p2)}
+  .fab{order:-1;width:100%;height:auto;margin:0 0 10px;border-radius:14px;border:0;padding:13px 14px;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800;font-size:15px}
+  .fab svg{width:20px;height:20px}
+  .fablbl{display:inline}
+  .brand{order:-2}
+  .top{margin:14px 22px 0;border-radius:22px;padding:16px 24px}
+  .top.compact{margin:0 22px;border-radius:0 0 22px 22px}
+  main{max-width:1180px;padding-bottom:48px}
+  .scrolltop{right:auto;left:28px;bottom:28px}
+  #toast{bottom:28px;left:calc(50% - var(--side)/2)}
+  /* home becomes a dashboard grid */
+  #view[data-tab=home]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+  #view[data-tab=home]>*{margin:0!important}
+  #view[data-tab=home]>.hero,#view[data-tab=home]>.stats,#view[data-tab=home]>.sec-title,#view[data-tab=home]>.evi{grid-column:1/-1}
+  #secList{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #view[data-tab=sections]:not([data-detail]) #secList{grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* sheet becomes a centered modal */
+  #sheet{align-items:center}
+  #sheetBody{border-radius:26px;width:min(600px,92vw);max-height:88dvh;padding:22px 26px 26px;transform:translateY(24px) scale(.96);opacity:0;transition:transform .3s var(--ease),opacity .25s}
+  #sheet.open #sheetBody{transform:none;opacity:1}
+  .grab{display:none}
+}
+@media(min-width:1400px){
+  :root{--side:272px}
+  main{max-width:1320px}
+  #view[data-tab=home]{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #view[data-tab=sections]:not([data-detail]) #secList{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+/* mid-size laptops: slimmer sidebar */
+@media(min-width:1000px) and (max-width:1180px){:root{--side:210px}.tab{font-size:14px;padding:12px}}
+@media(prefers-reduced-motion:reduce){#view>*{animation:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div><h1>📚 تتبع سير الدروس</h1><p>الفيزياء والكيمياء • الموسم الدراسي 2026–2027</p></div>
+  <div style="display:flex;gap:8px"><button class="iconbtn" id="cloudBtn" onclick="openCloud()" aria-label="السحابة">☁️</button><button class="iconbtn" onclick="openSettings()" aria-label="الإعدادات">⚙️</button></div>
+</header>
+<main><div id="view"></div></main>
+<button class="scrolltop" id="scrollTop" aria-label="العودة للأعلى" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<nav class="tabbar" id="tabbar" aria-label="التنقل الرئيسي">
+  <div class="brand"><i>📚</i><div><b>تتبع سير الدروس</b><span>فيزياء وكيمياء • 2026–2027</span></div></div>
+  <button class="tab" data-tab="home" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></svg>الرئيسية</button>
+  <button class="tab" data-tab="sections" onclick="go('sections')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.6"/><rect x="14" y="3" width="7" height="7" rx="1.6"/><rect x="3" y="14" width="7" height="7" rx="1.6"/><rect x="14" y="14" width="7" height="7" rx="1.6"/></svg>الأقسام</button>
+  <button class="fab" onclick="openLesson(defaultSection())" aria-label="تسجيل حصة"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><span class="fablbl">تسجيل حصة</span></button>
+  <button class="tab" data-tab="week" onclick="go('week')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2.4"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>الجدول</button>
+  <button class="tab" data-tab="curriculum" onclick="go('curriculum')"><svg viewBox="0 0 24 24"><path d="M4 4h6a3 3 0 013 3v13a2 2 0 00-2-2H4z"/><path d="M20 4h-6a3 3 0 00-3 3v13a2 2 0 012-2h7z"/></svg>البرنامج</button>
+  <button class="tab" data-tab="season" onclick="go('season')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h3M7 17h3M14 14h3"/></svg>العطل</button>
+</nav>
+
+<div id="sheet" onclick="if(event.target===this)closeSheet()"><div id="sheetBody"></div></div>
+<div id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+/* ============ البيانات ============ */
+const KEYS={data:"lessonTracker",tt:"trackerTimetable",cur:"trackerCurriculum",sec:"trackerSections",theme:"trackerTheme",meta:"trackerCurriculumMeta",holidays:"trackerHolidays",targets:"trackerTargetSessions",seasonStart:"trackerSeasonStart",seasonEnd:"trackerSeasonEnd",events:"trackerOfficialEvents",cycleSplit:"trackerCycleSplit"};
+const defaultSections=["3/8","3/7","3/6","3/5","3/2","3/14","3/1","2/7","2/6","2/5","2/14"];
+const defaultTimetable={
+"الإثنين":[["14:00","18:00","3/5"]],"الثلاثاء":[["08:00","09:00","3/7"],["11:00","15:00","3/14"]],
+"الأربعاء":[["08:00","09:00","2/5"],["11:00","15:00","3/2"]],"الخميس":[["14:00","16:00","2/6"],["16:00","18:00","3/1"]],
+"الجمعة":[["09:00","11:00","3/8"],["11:00","12:00","أنشطة موازية"]],"السبت":[["14:00","16:00","2/7"],["16:00","18:00","3/6"]]};
+const days=["الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت","الأحد"];
+const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||"null")||d}catch(e){return d}};
+let sections=load(KEYS.sec,defaultSections);
+let timetable=load(KEYS.tt,defaultTimetable);
+let data=load(KEYS.data,{});
+let curriculum=load(KEYS.cur,{"2":[],"3":[]});
+if(!curriculum["2"])curriculum["2"]=[];if(!curriculum["3"])curriculum["3"]=[];
+let curMeta=load(KEYS.meta,{"2":{},"3":{}});if(!curMeta["2"])curMeta["2"]={};if(!curMeta["3"])curMeta["3"]={};
+// تحديث برنامج الثالثة إعدادي من ملف Excel المرفق، مرة واحدة مع الحفاظ على باقي بيانات التطبيق.
+(function(){
+ const migrationKey="curriculum3_excel_2026_v1";
+ if(!localStorage.getItem(migrationKey)){
+   const imported={"curriculum":["Matériaux et électricité — les atomes et les ions · Séance 1 : Connaître les constituants de l’atome (noyau, électrons) ; savoir ce que signifie le numéro atomique Z ; connaître la charge élémentaire et l’utiliser ; connaître la neutralité électrique de l’atome.","Matériaux et électricité — les atomes et les ions · Séance 2 : Connaître les constituants de l’atome (noyau, électrons) ; savoir ce que signifie le numéro atomique Z ; connaître la charge élémentaire et l’utiliser ; connaître la neutralité électrique de l’atome.","Matériaux et électricité — les atomes et les ions · Séance 3 : Définir l’ion et le classer en ion monoatomique ou polyatomique ; écrire la formule de l’ion à partir du nombre d’électrons perdus ou gagnés par l’atome.","Matériaux et électricité — les atomes et les ions · Séance 4 : غير محدد في ملف Excel","Réactions de quelques matériaux avec l’air — Oxydation du fer et de l’aluminium · Séance 5 : غير محدد في ملف Excel","Réactions de quelques matériaux avec l’air — Oxydation du fer et de l’aluminium · Séance 6 : Connaître les facteurs favorables à l’oxydation du fer dans l’air humide ; connaître certaines propriétés de la rouille et comment l’éviter ; savoir comment protéger le fer contre la rouille ; différencier l’oxydation du fer et celle de l’aluminium dans l’air ; connaître les formules Al₂O₃ et Fe₂O₃ et leurs noms ; écrire les équations de réactions.","Soutien et fixation · Séance 7 : Séance de soutien et de fixation des acquis.","Contrôle écrit N° 1 · Séance 8 : Contrôle écrit N° 1.","Correction du contrôle écrit · Séance 9 : Correction du contrôle écrit N° 1.","Les solutions acides et les solutions basiques — Notion de pH · Séance 1 : Connaître la notion de pH ; utiliser le pH-mètre et le papier pH pour mesurer le pH d’une solution aqueuse ; classer les solutions aqueuses en solutions acides, basiques ou neutres selon la valeur du pH.","les solutions acides et les solutions basiques — Précautions à prendre lors de l’utilisation des solutions acides ou basiques · Séance 2 : غير محدد في ملف Excel","Les solutions acides et les solutions basiques — Précautions à prendre lors de l’utilisation des solutions acides ou basiques (la dilution) · Séance 3 : Connaître quelques dangers des solutions acides et basiques à partir des étiquettes et appliquer les précautions nécessaires lors de leur utilisation ; connaître l’opération de dilution des solutions acides et des solutions basiques et son effet sur la valeur du pH de chaque solution.","Réactions chimiques de certains matériaux avec les solutions acides et les solutions basiques · Séance 4 : غير محدد في ملف Excel","Réactions chimiques de certains matériaux avec les solutions acides et les solutions basiques · Séance 5 : Connaître l’effet de l’acide chlorhydrique sur les métaux : fer, cuivre, zinc et aluminium, avec l’écriture des équations de résultats simplifiées pour ces réactions ; savoir l’effet de la soude sur les métaux : fer, cuivre, zinc et aluminium (sans écrire les équations chimiques).","Tests d’identification de certains ions · Séance 6 : غير محدد في ملف Excel","Tests d’identification de certains ions · Séance 7 : Connaître les tests de reconnaissance des ions suivants : Cl⁻, Fe³⁺, Zn²⁺, Al³⁺, Cu²⁺ et Fe²⁺ ; savoir écrire les équations chimiques des réactions de précipitation.","Soutien et fixation · Séance 8 : غير محدد في ملف Excel","Contrôle écrit N° 2 · Séance 9 : Soutien, fixation et contrôle écrit N° 2.","Correction du contrôle · __ : Semaine réservée à l’examen local et à sa correction.","Examen local · __ : Correction du contrôle et de l’examen local.","Mouvement et repos — Description d’un mouvement : Le référentiel, la trajectoire · Séance 1 : Connaître le référentiel ; connaître l’état de mouvement et l’état de repos d’un solide par rapport à un référentiel ; connaître la trajectoire ; connaître et différencier les deux types de mouvements : mouvement de rotation et mouvement de translation.","Mouvement et repos — Description d’un mouvement : type de mouvement · Séance 2 : غير محدد في ملف Excel","La vitesse moyenne — Nature du mouvement · Séance 3 : غير محدد في ملف Excel","La vitesse moyenne — Nature du mouvement · Séance 4 : Connaître l’expression de la vitesse moyenne et son unité dans le S.I. ; calculer la valeur de la vitesse moyenne en m·s⁻¹ et en km·h⁻¹ ; connaître et déterminer la nature du mouvement d’un corps solide en translation : uniforme, accéléré, ralenti.","Risque de vitesse — La sécurité routière · Séance 5 : غير محدد في ملف Excel","Les actions mécaniques et leurs effets — Actions de contact et actions à distance · Séance 6 : غير محدد في ملف Excel","Les actions mécaniques et leurs effets — Actions de contact et actions à distance · Séance 7 : Connaître les actions mécaniques et déterminer leurs effets ; connaître et différencier les deux types d’actions mécaniques ; connaître le fait qu’à chaque action mécanique est associée une force.","Soutien et fixation · Séance 8 : غير محدد في ملف Excel (28)","Contrôle continu N° 1 · Séance 9 : غير محدد في ملف Excel","Correction du contrôle · Séance 10 : Contrôle continu N° 1 et correction.","Les caractéristiques d’une force — Mesure et représentation · Séance 1 : غير محدد في ملف Excel","Les caractéristiques d’une force — Mesure et représentation · Séance 2 : غير محدد في ملف Excel","Les caractéristiques d’une force — Mesure et représentation · Séance 3 : غير محدد في ملف Excel","Soutien et fixation · Séance 4 : Connaître et déterminer les caractéristiques d’une force ; mesurer l’intensité d’une force par un dynamomètre ; représenter une force par un vecteur en utilisant une échelle convenable.","Équilibre d’un corps soumis à deux forces · Séance 5 : غير محدد في ملف Excel","Équilibre d’un corps soumis à deux forces · Séance 6 : Connaître et appliquer les conditions d’équilibre.","La masse — Le poids · Séance 7 : غير محدد في ملف Excel","La masse — Le poids · Séance 8 : Connaître et déterminer les caractéristiques du poids d’un corps solide ; différencier le poids de la masse ; connaître et exploiter la relation entre le poids et la masse.","Soutien et fixation · Séance 9 : غير محدد في ملف Excel","Contrôle écrit N° 2 · Séance 10 : غير محدد في ملف Excel","Correction du contrôle · Séance 11 : Séance de soutien et de fixation.","La loi d’Ohm · Séance 1 : Réalisation d’un montage simple pour vérifier la loi d’Ohm à partir de son schéma ; connaître et appliquer la loi d’Ohm.","Notion de la puissance électrique · Séance 2 : غير محدد في ملف Excel","Notion de la puissance électrique · Séance 3 : Connaître la puissance électrique et son unité : watt ; connaître quelques ordres de grandeur de la puissance électrique ; connaître les caractéristiques nominales d’un appareil électrique ; déterminer la puissance électrique consommée par un appareil de chauffage ; connaître et appliquer l’expression P = U·I.","La puissance électrique consommée dans une installation électrique domestique · Séance 4 : Connaître que l’énergie électrique consommée par un appareil de chauffage se transforme en chaleur ; connaître l’énergie électrique et ses unités pratiques : joule, watt-heure ; connaître et appliquer l’expression E = P·t ; déterminer l’énergie électrique consommée par un appareil de chauffage.","L’énergie électrique consommée par un appareil de chauffage · Séance 5 : غير محدد في ملف Excel","L’énergie électrique consommée dans un montage électrique domestique — Le compteur électrique · Séance 6 : Déterminer l’énergie électrique consommée dans un montage électrique domestique à partir d’une facture électrique ou des données du compteur électrique ; connaître le rôle du compteur électrique dans un montage électrique domestique.","Soutien et fixation · Séance 7 : Séance de soutien et de fixation.","Contrôle continu N° 5 · Séance 8 : غير محدد في ملف Excel","correction · Séance 9 : Contrôle continu N° 5 et correction (tel qu’indiqué sur la dernière image)."],"meta":{"Matériaux et électricité — les atomes et les ions · Séance 1 : Connaître les constituants de l’atome (noyau, électrons) ; savoir ce que signifie le numéro atomique Z ; connaître la charge élémentaire et l’utiliser ; connaître la neutralité électrique de l’atome.":{"theme":"Les matériaux","periode":"Période 1","chapitre":"Matériaux et électricité — les atomes et les ions","seance":"Séance 1","tache":"Connaître les constituants de l’atome (noyau, électrons) ; savoir ce que signifie le numéro atomique Z ; connaître la charge élémentaire et l’utiliser ; connaître la neutralité électrique de l’atome."},"Matériaux et électricité — les atomes et les ions · Séance 2 : Connaître les constituants de l’atome (noyau, électrons) ; savoir ce que signifie le numéro atomique Z ; connaître la charge élémentaire et l’utiliser ; connaître la neutralité électrique de l’atome.":{"theme":"Les matériaux","periode":"Période 1","chapitre":"Matériaux et électricité — les atomes et les ions","seance":"Séance 2","tache":"Connaître les constituants de l’atome (noyau, électrons) ; savoir ce que signifie le numéro atomique Z ; connaître la charge élémentaire et l’utiliser ; connaître la neutralité électrique de l’atome."},"Matériaux et électricité — les atomes et les ions · Séance 3 : Définir l’ion et le classer en ion monoatomique ou polyatomique ; écrire la formule de l’ion à partir du nombre d’électrons perdus ou gagnés par l’atome.":{"theme":"Les matériaux","periode":"Période 1","chapitre":"Matériaux et électricité — les atomes et les ions","seance":"Séance 3","tache":"Définir l’ion et le classer en ion monoatomique ou polyatomique ; écrire la formule de l’ion à partir du nombre d’électrons perdus ou gagnés par l’atome."},"Matériaux et électricité — les atomes et les ions · Séance 4 : غير محدد في ملف Excel":{"theme":"Les matériaux","periode":"Période 1","chapitre":"Matériaux et électricité — les atomes et les ions","seance":"Séance 4","tache":"غير محدد في ملف Excel"},"Réactions de quelques matériaux avec l’air — Oxydation du fer et de l’aluminium · Séance 5 : غير محدد في ملف Excel":{"theme":"Les matériaux","periode":"Période 1","chapitre":"Réactions de quelques matériaux avec l’air — Oxydation du fer et de l’aluminium","seance":"Séance 5","tache":"غير محدد في ملف Excel"},"Réactions de quelques matériaux avec l’air — Oxydation du fer et de l’aluminium · Séance 6 : Connaître les facteurs favorables à l’oxydation du fer dans l’air humide ; connaître certaines propriétés de la rouille et comment l’éviter ; savoir comment protéger le fer contre la rouille ; différencier l’oxydation du fer et celle de l’aluminium dans l’air ; connaître les formules Al₂O₃ et Fe₂O₃ et leurs noms ; écrire les équations de réactions.":{"theme":"Les matériaux","periode":"Période 1","chapitre":"Réactions de quelques matériaux avec l’air — Oxydation du fer et de l’aluminium","seance":"Séance 6","tache":"Connaître les facteurs favorables à l’oxydation du fer dans l’air humide ; connaître certaines propriétés de la rouille et comment l’éviter ; savoir comment protéger le fer contre la rouille ; différencier l’oxydation du fer et celle de l’aluminium dans l’air ; connaître les formules Al₂O₃ et Fe₂O₃ et leurs noms ; écrire les équations de réactions."},"Soutien et fixation · Séance 7 : Séance de soutien et de fixation des acquis.":{"theme":"Les matériaux","periode":"Période 1","chapitre":"Soutien et fixation","seance":"Séance 7","tache":"Séance de soutien et de fixation des acquis."},"Contrôle écrit N° 1 · Séance 8 : Contrôle écrit N° 1.":{"theme":"Les matériaux","periode":"Période 1","chapitre":"Contrôle écrit N° 1","seance":"Séance 8","tache":"Contrôle écrit N° 1."},"Correction du contrôle écrit · Séance 9 : Correction du contrôle écrit N° 1.":{"theme":"Les matériaux","periode":"Période 1","chapitre":"Correction du contrôle écrit","seance":"Séance 9","tache":"Correction du contrôle écrit N° 1."},"Les solutions acides et les solutions basiques — Notion de pH · Séance 1 : Connaître la notion de pH ; utiliser le pH-mètre et le papier pH pour mesurer le pH d’une solution aqueuse ; classer les solutions aqueuses en solutions acides, basiques ou neutres selon la valeur du pH.":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Les solutions acides et les solutions basiques — Notion de pH","seance":"Séance 1","tache":"Connaître la notion de pH ; utiliser le pH-mètre et le papier pH pour mesurer le pH d’une solution aqueuse ; classer les solutions aqueuses en solutions acides, basiques ou neutres selon la valeur du pH."},"les solutions acides et les solutions basiques — Précautions à prendre lors de l’utilisation des solutions acides ou basiques · Séance 2 : غير محدد في ملف Excel":{"theme":"Les matériaux","periode":"Période 2","chapitre":"les solutions acides et les solutions basiques — Précautions à prendre lors de l’utilisation des solutions acides ou basiques","seance":"Séance 2","tache":"غير محدد في ملف Excel"},"Les solutions acides et les solutions basiques — Précautions à prendre lors de l’utilisation des solutions acides ou basiques (la dilution) · Séance 3 : Connaître quelques dangers des solutions acides et basiques à partir des étiquettes et appliquer les précautions nécessaires lors de leur utilisation ; connaître l’opération de dilution des solutions acides et des solutions basiques et son effet sur la valeur du pH de chaque solution.":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Les solutions acides et les solutions basiques — Précautions à prendre lors de l’utilisation des solutions acides ou basiques (la dilution)","seance":"Séance 3","tache":"Connaître quelques dangers des solutions acides et basiques à partir des étiquettes et appliquer les précautions nécessaires lors de leur utilisation ; connaître l’opération de dilution des solutions acides et des solutions basiques et son effet sur la valeur du pH de chaque solution."},"Réactions chimiques de certains matériaux avec les solutions acides et les solutions basiques · Séance 4 : غير محدد في ملف Excel":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Réactions chimiques de certains matériaux avec les solutions acides et les solutions basiques","seance":"Séance 4","tache":"غير محدد في ملف Excel"},"Réactions chimiques de certains matériaux avec les solutions acides et les solutions basiques · Séance 5 : Connaître l’effet de l’acide chlorhydrique sur les métaux : fer, cuivre, zinc et aluminium, avec l’écriture des équations de résultats simplifiées pour ces réactions ; savoir l’effet de la soude sur les métaux : fer, cuivre, zinc et aluminium (sans écrire les équations chimiques).":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Réactions chimiques de certains matériaux avec les solutions acides et les solutions basiques","seance":"Séance 5","tache":"Connaître l’effet de l’acide chlorhydrique sur les métaux : fer, cuivre, zinc et aluminium, avec l’écriture des équations de résultats simplifiées pour ces réactions ; savoir l’effet de la soude sur les métaux : fer, cuivre, zinc et aluminium (sans écrire les équations chimiques)."},"Tests d’identification de certains ions · Séance 6 : غير محدد في ملف Excel":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Tests d’identification de certains ions","seance":"Séance 6","tache":"غير محدد في ملف Excel"},"Tests d’identification de certains ions · Séance 7 : Connaître les tests de reconnaissance des ions suivants : Cl⁻, Fe³⁺, Zn²⁺, Al³⁺, Cu²⁺ et Fe²⁺ ; savoir écrire les équations chimiques des réactions de précipitation.":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Tests d’identification de certains ions","seance":"Séance 7","tache":"Connaître les tests de reconnaissance des ions suivants : Cl⁻, Fe³⁺, Zn²⁺, Al³⁺, Cu²⁺ et Fe²⁺ ; savoir écrire les équations chimiques des réactions de précipitation."},"Soutien et fixation · Séance 8 : غير محدد في ملف Excel":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Soutien et fixation","seance":"Séance 8","tache":"غير محدد في ملف Excel"},"Contrôle écrit N° 2 · Séance 9 : Soutien, fixation et contrôle écrit N° 2.":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Contrôle écrit N° 2","seance":"Séance 9","tache":"Soutien, fixation et contrôle écrit N° 2."},"Correction du contrôle · __ : Semaine réservée à l’examen local et à sa correction.":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Correction du contrôle","seance":"__","tache":"Semaine réservée à l’examen local et à sa correction."},"Examen local · __ : Correction du contrôle et de l’examen local.":{"theme":"Les matériaux","periode":"Période 2","chapitre":"Examen local","seance":"__","tache":"Correction du contrôle et de l’examen local."},"Mouvement et repos — Description d’un mouvement : Le référentiel, la trajectoire · Séance 1 : Connaître le référentiel ; connaître l’état de mouvement et l’état de repos d’un solide par rapport à un référentiel ; connaître la trajectoire ; connaître et différencier les deux types de mouvements : mouvement de rotation et mouvement de translation.":{"theme":"la mécanique","periode":"Période 3","chapitre":"Mouvement et repos — Description d’un mouvement : Le référentiel, la trajectoire","seance":"Séance 1","tache":"Connaître le référentiel ; connaître l’état de mouvement et l’état de repos d’un solide par rapport à un référentiel ; connaître la trajectoire ; connaître et différencier les deux types de mouvements : mouvement de rotation et mouvement de translation."},"Mouvement et repos — Description d’un mouvement : type de mouvement · Séance 2 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 3","chapitre":"Mouvement et repos — Description d’un mouvement : type de mouvement","seance":"Séance 2","tache":"غير محدد في ملف Excel"},"La vitesse moyenne — Nature du mouvement · Séance 3 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 3","chapitre":"La vitesse moyenne — Nature du mouvement","seance":"Séance 3","tache":"غير محدد في ملف Excel"},"La vitesse moyenne — Nature du mouvement · Séance 4 : Connaître l’expression de la vitesse moyenne et son unité dans le S.I. ; calculer la valeur de la vitesse moyenne en m·s⁻¹ et en km·h⁻¹ ; connaître et déterminer la nature du mouvement d’un corps solide en translation : uniforme, accéléré, ralenti.":{"theme":"la mécanique","periode":"Période 3","chapitre":"La vitesse moyenne — Nature du mouvement","seance":"Séance 4","tache":"Connaître l’expression de la vitesse moyenne et son unité dans le S.I. ; calculer la valeur de la vitesse moyenne en m·s⁻¹ et en km·h⁻¹ ; connaître et déterminer la nature du mouvement d’un corps solide en translation : uniforme, accéléré, ralenti."},"Risque de vitesse — La sécurité routière · Séance 5 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 2","chapitre":"Risque de vitesse — La sécurité routière","seance":"Séance 5","tache":"غير محدد في ملف Excel"},"Les actions mécaniques et leurs effets — Actions de contact et actions à distance · Séance 6 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 3","chapitre":"Les actions mécaniques et leurs effets — Actions de contact et actions à distance","seance":"Séance 6","tache":"غير محدد في ملف Excel"},"Les actions mécaniques et leurs effets — Actions de contact et actions à distance · Séance 7 : Connaître les actions mécaniques et déterminer leurs effets ; connaître et différencier les deux types d’actions mécaniques ; connaître le fait qu’à chaque action mécanique est associée une force.":{"theme":"la mécanique","periode":"Période 3","chapitre":"Les actions mécaniques et leurs effets — Actions de contact et actions à distance","seance":"Séance 7","tache":"Connaître les actions mécaniques et déterminer leurs effets ; connaître et différencier les deux types d’actions mécaniques ; connaître le fait qu’à chaque action mécanique est associée une force."},"Soutien et fixation · Séance 8 : غير محدد في ملف Excel (28)":{"theme":"la mécanique","periode":"Période 3","chapitre":"Soutien et fixation","seance":"Séance 8","tache":"غير محدد في ملف Excel"},"Contrôle continu N° 1 · Séance 9 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 3","chapitre":"Contrôle continu N° 1","seance":"Séance 9","tache":"غير محدد في ملف Excel"},"Correction du contrôle · Séance 10 : Contrôle continu N° 1 et correction.":{"theme":"la mécanique","periode":"Période 3","chapitre":"Correction du contrôle","seance":"Séance 10","tache":"Contrôle continu N° 1 et correction."},"Les caractéristiques d’une force — Mesure et représentation · Séance 1 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 4","chapitre":"Les caractéristiques d’une force — Mesure et représentation","seance":"Séance 1","tache":"غير محدد في ملف Excel"},"Les caractéristiques d’une force — Mesure et représentation · Séance 2 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 4","chapitre":"Les caractéristiques d’une force — Mesure et représentation","seance":"Séance 2","tache":"غير محدد في ملف Excel"},"Les caractéristiques d’une force — Mesure et représentation · Séance 3 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 4","chapitre":"Les caractéristiques d’une force — Mesure et représentation","seance":"Séance 3","tache":"غير محدد في ملف Excel"},"Soutien et fixation · Séance 4 : Connaître et déterminer les caractéristiques d’une force ; mesurer l’intensité d’une force par un dynamomètre ; représenter une force par un vecteur en utilisant une échelle convenable.":{"theme":"la mécanique","periode":"Période 4","chapitre":"Soutien et fixation","seance":"Séance 4","tache":"Connaître et déterminer les caractéristiques d’une force ; mesurer l’intensité d’une force par un dynamomètre ; représenter une force par un vecteur en utilisant une échelle convenable."},"Équilibre d’un corps soumis à deux forces · Séance 5 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 4","chapitre":"Équilibre d’un corps soumis à deux forces","seance":"Séance 5","tache":"غير محدد في ملف Excel"},"Équilibre d’un corps soumis à deux forces · Séance 6 : Connaître et appliquer les conditions d’équilibre.":{"theme":"la mécanique","periode":"Période 4","chapitre":"Équilibre d’un corps soumis à deux forces","seance":"Séance 6","tache":"Connaître et appliquer les conditions d’équilibre."},"La masse — Le poids · Séance 7 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 4","chapitre":"La masse — Le poids","seance":"Séance 7","tache":"غير محدد في ملف Excel"},"La masse — Le poids · Séance 8 : Connaître et déterminer les caractéristiques du poids d’un corps solide ; différencier le poids de la masse ; connaître et exploiter la relation entre le poids et la masse.":{"theme":"la mécanique","periode":"Période 4","chapitre":"La masse — Le poids","seance":"Séance 8","tache":"Connaître et déterminer les caractéristiques du poids d’un corps solide ; différencier le poids de la masse ; connaître et exploiter la relation entre le poids et la masse."},"Soutien et fixation · Séance 9 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 4","chapitre":"Soutien et fixation","seance":"Séance 9","tache":"غير محدد في ملف Excel"},"Contrôle écrit N° 2 · Séance 10 : غير محدد في ملف Excel":{"theme":"la mécanique","periode":"Période 4","chapitre":"Contrôle écrit N° 2","seance":"Séance 10","tache":"غير محدد في ملف Excel"},"Correction du contrôle · Séance 11 : Séance de soutien et de fixation.":{"theme":"la mécanique","periode":"Période 4","chapitre":"Correction du contrôle","seance":"Séance 11","tache":"Séance de soutien et de fixation."},"La loi d’Ohm · Séance 1 : Réalisation d’un montage simple pour vérifier la loi d’Ohm à partir de son schéma ; connaître et appliquer la loi d’Ohm.":{"theme":"L'électricité","periode":"Période 5","chapitre":"La loi d’Ohm","seance":"Séance 1","tache":"Réalisation d’un montage simple pour vérifier la loi d’Ohm à partir de son schéma ; connaître et appliquer la loi d’Ohm."},"Notion de la puissance électrique · Séance 2 : غير محدد في ملف Excel":{"theme":"L'électricité","periode":"Période 5","chapitre":"Notion de la puissance électrique","seance":"Séance 2","tache":"غير محدد في ملف Excel"},"Notion de la puissance électrique · Séance 3 : Connaître la puissance électrique et son unité : watt ; connaître quelques ordres de grandeur de la puissance électrique ; connaître les caractéristiques nominales d’un appareil électrique ; déterminer la puissance électrique consommée par un appareil de chauffage ; connaître et appliquer l’expression P = U·I.":{"theme":"L'électricité","periode":"Période 5","chapitre":"Notion de la puissance électrique","seance":"Séance 3","tache":"Connaître la puissance électrique et son unité : watt ; connaître quelques ordres de grandeur de la puissance électrique ; connaître les caractéristiques nominales d’un appareil électrique ; déterminer la puissance électrique consommée par un appareil de chauffage ; connaître et appliquer l’expression P = U·I."},"La puissance électrique consommée dans une installation électrique domestique · Séance 4 : Connaître que l’énergie électrique consommée par un appareil de chauffage se transforme en chaleur ; connaître l’énergie électrique et ses unités pratiques : joule, watt-heure ; connaître et appliquer l’expression E = P·t ; déterminer l’énergie électrique consommée par un appareil de chauffage.":{"theme":"L'électricité","periode":"Période 5","chapitre":"La puissance électrique consommée dans une installation électrique domestique","seance":"Séance 4","tache":"Connaître que l’énergie électrique consommée par un appareil de chauffage se transforme en chaleur ; connaître l’énergie électrique et ses unités pratiques : joule, watt-heure ; connaître et appliquer l’expression E = P·t ; déterminer l’énergie électrique consommée par un appareil de chauffage."},"L’énergie électrique consommée par un appareil de chauffage · Séance 5 : غير محدد في ملف Excel":{"theme":"L'électricité","periode":"Période 5","chapitre":"L’énergie électrique consommée par un appareil de chauffage","seance":"Séance 5","tache":"غير محدد في ملف Excel"},"L’énergie électrique consommée dans un montage électrique domestique — Le compteur électrique · Séance 6 : Déterminer l’énergie électrique consommée dans un montage électrique domestique à partir d’une facture électrique ou des données du compteur électrique ; connaître le rôle du compteur électrique dans un montage électrique domestique.":{"theme":"L'électricité","periode":"Période 5","chapitre":"L’énergie électrique consommée dans un montage électrique domestique — Le compteur électrique","seance":"Séance 6","tache":"Déterminer l’énergie électrique consommée dans un montage électrique domestique à partir d’une facture électrique ou des données du compteur électrique ; connaître le rôle du compteur électrique dans un montage électrique domestique."},"Soutien et fixation · Séance 7 : Séance de soutien et de fixation.":{"theme":"L'électricité","periode":"Période 5","chapitre":"Soutien et fixation","seance":"Séance 7","tache":"Séance de soutien et de fixation."},"Contrôle continu N° 5 · Séance 8 : غير محدد في ملف Excel":{"theme":"L'électricité","periode":"Période 5","chapitre":"Contrôle continu N° 5","seance":"Séance 8","tache":"غير محدد في ملف Excel"},"correction · Séance 9 : Contrôle continu N° 5 et correction (tel qu’indiqué sur la dernière image).":{"theme":"L'électricité","periode":"Période 5","chapitre":"correction","seance":"Séance 9","tache":"Contrôle continu N° 5 et correction (tel qu’indiqué sur la dernière image)."}}};
+   curriculum["3"]=imported.curriculum;
+   curMeta["3"]=imported.meta;
+   localStorage.setItem(KEYS.cur,JSON.stringify(curriculum));
+   localStorage.setItem(KEYS.meta,JSON.stringify(curMeta));
+   localStorage.setItem(migrationKey,"done");
+ }
+})();
+
+const defaultHolidays=[
+{id:"h1",name:"الفترة البينية الأولى",type:"عطلة بينية",start:"2026-10-18",end:"2026-10-25",note:"حسب اللائحة المرفقة"},
+{id:"h2",name:"عيد الوحدة",type:"عيد وطني",start:"2026-10-31",end:"2026-10-31",note:"حسب اللائحة المرفقة"},
+{id:"h3",name:"ذكرى المسيرة الخضراء",type:"عيد وطني",start:"2026-11-06",end:"2026-11-06",note:"حسب اللائحة المرفقة"},
+{id:"h4",name:"عيد الاستقلال",type:"عيد وطني",start:"2026-11-18",end:"2026-11-18",note:"حسب اللائحة المرفقة"},
+{id:"h5",name:"الفترة البينية الثانية",type:"عطلة بينية",start:"2026-12-06",end:"2026-12-13",note:"حسب اللائحة المرفقة"},
+{id:"h6",name:"فاتح السنة الميلادية",type:"عيد وطني",start:"2027-01-01",end:"2027-01-01",note:"حسب اللائحة المرفقة"},
+{id:"h7",name:"ذكرى تقديم وثيقة الاستقلال",type:"عيد وطني",start:"2027-01-11",end:"2027-01-11",note:"حسب اللائحة المرفقة"},
+{id:"h8",name:"فاتح السنة الأمازيغية",type:"مناسبة وطنية",start:"2027-01-14",end:"2027-01-14",note:"حسب اللائحة المرفقة"},
+{id:"h9",name:"عطلة منتصف السنة الدراسية",type:"عطلة بينية",start:"2027-01-24",end:"2027-01-31",note:"حسب اللائحة المرفقة"},
+{id:"h10",name:"عيد الفطر",type:"عيد ديني",start:"",end:"",note:"من 29 رمضان إلى 2 شوال 1448 — أدخل التاريخ الميلادي بعد التأكيد الرسمي"},
+{id:"h11",name:"الفترة البينية الثالثة",type:"عطلة بينية",start:"2027-03-21",end:"2027-03-28",note:"حسب اللائحة المرفقة"},
+{id:"h12",name:"عيد الشغل",type:"عيد وطني",start:"2027-05-01",end:"2027-05-01",note:"حسب اللائحة المرفقة"},
+{id:"h13",name:"الفترة البينية الرابعة",type:"عطلة بينية",start:"2027-05-09",end:"2027-05-16",note:"حسب اللائحة المرفقة"},
+{id:"h14",name:"عيد الأضحى",type:"عيد ديني",start:"",end:"",note:"من 9 إلى 11 ذي الحجة 1448 — أدخل التاريخ الميلادي بعد التأكيد الرسمي"},
+{id:"h15",name:"فاتح محرم",type:"عيد ديني",start:"",end:"",note:"فاتح محرم 1449 — أدخل التاريخ الميلادي بعد التأكيد الرسمي"}
+];
+let holidays=load(KEYS.holidays,defaultHolidays);
+let targetSessions=load(KEYS.targets,{"2":0,"3":0});
+const FR=s=>String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+function cleanCh(c){c=String(c??"").replace(/\s+/g," ").trim();return /^[—–\-]+$/.test(c)?"":c}
+function mkKey(m){return (m.chapitre?m.chapitre+" · ":"")+[m.seance,m.tache].filter(Boolean).join(" : ")}
+function tinfo(lv,t){let m=(curMeta[lv]||{})[t];return m?{title:[m.seance,m.tache].filter(Boolean).join(" : "),sub:[m.chapitre,m.periode].filter(Boolean).join(" · ")}:{title:t,sub:""}}
+function persist(){try{localStorage.setItem(KEYS.data,JSON.stringify(data));localStorage.setItem(KEYS.tt,JSON.stringify(timetable));localStorage.setItem(KEYS.cur,JSON.stringify(curriculum));localStorage.setItem(KEYS.meta,JSON.stringify(curMeta));localStorage.setItem(KEYS.sec,JSON.stringify(sections));localStorage.setItem(KEYS.holidays,JSON.stringify(holidays));localStorage.setItem(KEYS.targets,JSON.stringify(targetSessions));localStorage.setItem(KEYS.events,JSON.stringify(officialEvents))}catch(e){toast("تعذّر الحفظ على هذا الجهاز")}}
+
+/* ============ أدوات ============ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const A=v=>esc(JSON.stringify(v));
+const toMin=t=>{let p=String(t).split(":");return +p[0]*60+(+p[1]||0)};
+const levelOf=s=>String(s).startsWith("3")?"3":"2";
+const isSection=s=>sections.includes(s);
+function localDate(){let d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function todayName(){return days[(new Date().getDay()+6)%7]}
+function nowMin(){let n=new Date();return n.getHours()*60+n.getMinutes()}
+function fmtDate(d){try{return new Date(d+"T12:00:00").toLocaleDateString("ar-MA",{day:"numeric",month:"short"})}catch(e){return d}}
+function sortDay(d){timetable[d].sort((a,b)=>toMin(a[0])-toMin(b[0]))}
+Object.keys(timetable).forEach(sortDay);
+
+function completedTopics(s){return new Set((data[s]||[]).filter(l=>l.progress>=100).map(l=>l.topic))}
+function topicInfo(s,t){let rs=(data[s]||[]).filter(l=>l.topic===t);if(!rs.length)return{st:"none",p:0};let m=Math.max(...rs.map(r=>r.progress));return{st:m>=100?"done":"part",p:m}}
+function stats(s){let topics=curriculum[levelOf(s)]||[],done=completedTopics(s),n=topics.filter(t=>done.has(t)).length,target=Math.max(0,Number(targetSessions[levelOf(s)])||0),recorded=(data[s]||[]).length;return{total:topics.length,done:n,pct:target?Math.min(100,Math.round(recorded/target*100)):0,recorded,target,next:topics.find(t=>!done.has(t))||""}}
+function latest(s){return(data[s]||[]).slice().sort((a,b)=>b.date.localeCompare(a.date))[0]}
+function dateISO(d){return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)}
+function holidayOn(date){return holidays.some(h=>h.start&&h.end&&h.start<=date&&date<=h.end)}
+function seasonStartDate(){return localStorage.getItem(KEYS.seasonStart)||"2026-09-01"}
+function seasonEndDate(){return localStorage.getItem(KEYS.seasonEnd)||"2027-06-30"}
+function schoolYearProgress(){let now=new Date(),ss=seasonStartDate(),se=seasonEndDate();if(!ss||!se||se<ss)return 0;let start=new Date(ss+"T12:00:00"),end=new Date(se+"T12:00:00");now=new Date(dateISO(now)+"T12:00:00");if(now<start)return 0;if(now>end)return 1;let total=0,elapsed=0,d=new Date(start);while(d<=end){let iso=dateISO(d);if(d.getDay()!==0&&!holidayOn(iso)){total++;if(d<=now)elapsed++}d.setDate(d.getDate()+1)}return total?elapsed/total:0}
+function expectedPct(){return Math.floor(schoolYearProgress()*100)}
+function isLate(s){let st=stats(s),e=expectedPct();return !!st.target&&e>0&&st.pct<100&&st.pct+10<e}
+function statusOf(s){let st=stats(s);if(!st.target)return{k:"idle",cls:"b-idle",txt:"حدد الحصة الهدف",col:"var(--muted)"};if(st.pct>=100)return{k:"ok",cls:"b-ok",txt:"اكتمل 🎉",col:"var(--ok)"};if(!(data[s]||[]).length)return{k:"warn",cls:"b-warn",txt:"لم يبدأ",col:"#f59e0b"};return{k:"ok",cls:"b-ok",txt:"قيد الإنجاز",col:"var(--ok)"}}
+function orderedSections(){let seen=new Set(),out=[];days.forEach(d=>(timetable[d]||[]).forEach(sl=>{if(sections.includes(sl[2])&&!seen.has(sl[2])){seen.add(sl[2]);out.push(sl[2])}}));sections.forEach(s=>{if(!seen.has(s))out.push(s)});return out}
+function lvChip(s){return `<span class="lvchip lv${levelOf(s)}">${levelOf(s)==="3"?"الثالثة":"الثانية"}</span>`}
+
+function ring(pct,size,stroke,color){let r=(size-stroke)/2,c=2*Math.PI*r,h=size/2;return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${h}" cy="${h}" r="${r}" fill="none" stroke="var(--track)" stroke-width="${stroke}"/>${pct>0?`<circle cx="${h}" cy="${h}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-dasharray="${c*pct/100} ${c}" transform="rotate(-90 ${h} ${h})"/>`:""}<text x="50%" y="50%" text-anchor="middle" dominant-baseline="central" class="ringtxt" font-size="${Math.round(size*.26)}">${pct}%</text></svg>`}
+
+let toastTimer;
+function toast(msg,undo){let t=$("toast");t.innerHTML=`<span>${esc(msg)}</span>${undo?`<button id="undoBtn">تراجع</button>`:""}`;t.classList.add("show");if(undo)$("undoBtn").onclick=()=>{undo();t.classList.remove("show")};clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),undo?5000:2200)}
+function openSheet(html){$("sheetBody").innerHTML=`<div class="grab"></div>`+html;$("sheet").classList.add("open");document.body.style.overflow="hidden";$("sheetBody").scrollTop=0}
+function closeSheet(){$("sheet").classList.remove("open");document.body.style.overflow=""}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet()});
+
+/* ============ الحالة والتنقل ============ */
+let ui={tab:"home",detail:null,detailTab:"lessons",day:todayName(),filter:"all",q:"",level:"3"};
+function go(tab){ui.tab=tab;ui.detail=null;render(true)}
+function openDetail(s){ui.tab="sections";ui.detail=s;ui.detailTab="lessons";render(true)}
+function render(top){
+  document.querySelectorAll(".tab").forEach(b=>{let on=b.dataset.tab===ui.tab;b.classList.toggle("on",on);on?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current")});
+  let v=$("view"),h;
+  if(ui.detail)h=viewDetail();else h={home:viewHome,sections:viewSections,week:viewWeek,curriculum:viewCurriculum,season:viewSeason}[ui.tab]();
+  v.innerHTML=h;v.dataset.tab=ui.tab;if(ui.detail)v.dataset.detail="1";else v.removeAttribute("data-detail");
+  if(ui.tab==="sections"&&!ui.detail)renderSecList();
+  if(ui.tab==="curriculum"&&importPlan)renderImportPreview();
+  if(top){window.scrollTo({top:0});v.style.animation="none";void v.offsetWidth;v.style.animation=""}
+}
+function defaultSection(){let c=currentOrNext();if(c&&isSection(c.slot[2]))return c.slot[2];return ui.detail||sections[0]}
+
+/* ============ الرئيسية ============ */
+function slotsOf(d){return timetable[d]||[]}
+function currentOrNext(){let n=nowMin(),sl=slotsOf(todayName());let cur=sl.find(x=>n>=toMin(x[0])&&n<toMin(x[1]));if(cur)return{slot:cur,active:true};let nx=sl.find(x=>toMin(x[0])>n);return nx?{slot:nx,active:false}:null}
+function nextDaySlot(){for(let k=1;k<=7;k++){let d=days[(days.indexOf(todayName())+k)%7],sl=slotsOf(d);if(sl.length)return{d,slot:sl[0]}}return null}
+function viewHome(){
+  let now=new Date(),h=now.getHours(),greet=h<12?"صباح الخير ☀️":"مساء الخير 🌙",cn=currentOrNext(),sl=slotsOf(todayName()),late=sections.filter(isLate),n=nowMin();
+  let tot=0,dn=0;sections.forEach(s=>{let t=stats(s);tot+=t.target;dn+=t.recorded});let all=tot?Math.min(100,Math.round(dn/tot*100)):0,exp=0;
+  let dateStr=now.toLocaleDateString("ar-MA",{weekday:"long",day:"numeric",month:"long"});
+  let hero;
+  if(cn){let s=cn.slot[2],ok=isSection(s),st=ok?stats(s):null,rem=toMin(cn.slot[1])-n,until=toMin(cn.slot[0])-n;
+    hero=`<div class="hero"><div class="hello">${greet} • ${esc(dateStr)}</div><span class="pill ${cn.active?"live":""}">${cn.active?"● الحصة الآن":"الحصة القادمة"}</span><h2>${ok?"القسم "+esc(s):esc(s)}</h2><div class="tm">${cn.slot[0]} → ${cn.slot[1]} • ${cn.active?`متبقي ${rem} د`:`بعد ${until>=60?Math.floor(until/60)+" س "+(until%60)+" د":until+" د"}`}</div>${ok?`<div class="nx">📖 ${st.next?"الدرس المقترح: "+esc(st.next):st.total?"اكتمل برنامج هذا القسم":"أضف برنامج المستوى لتظهر الاقتراحات"}</div><button class="btn light block" onclick="openLesson(${A(s)})">✏️ تسجيل الحصة</button>`:`<div class="nx">نشاط غير مرتبط بقسم دراسي</div>`}</div>`}
+  else{let nd=nextDaySlot();hero=`<div class="hero"><div class="hello">${greet} • ${esc(dateStr)}</div><span class="pill">${sl.length?"انتهت حصص اليوم":"لا حصص اليوم"}</span><h2>${sl.length?"أحسنت ✨":"يوم راحة 🌿"}</h2>${nd?`<div class="nx">الحصة التالية: ${nd.d} ${nd.slot[0]} — ${esc(nd.slot[2])}</div>`:""}<button class="btn light block" onclick="openLesson(defaultSection())">✏️ تسجيل حصة</button></div>`}
+  let timeline=sl.length?`<div class="card"><div class="row sb" style="margin-bottom:12px"><h3>📅 حصص اليوم</h3><span class="small">${sl.length} حصص</span></div><div class="tl">${sl.map(x=>{let a=n>=toMin(x[0])&&n<toMin(x[1]),p=n>=toMin(x[1]);return `<div class="tli ${a?"now":p?"past":""}"><div class="grow"><b>${esc(x[2])}</b></div><span class="t">${x[0]} - ${x[1]}</span>${isSection(x[2])?`<button class="btn sm" onclick="openLesson(${A(x[2])})">تسجيل</button>`:""}</div>`}).join("")}</div></div>`:"";
+  let alert=late.length?`<div class="card" style="background:var(--warnbg)"><b style="color:var(--warn)">⚠️ ${late.length} ${late.length>2?"أقسام":"قسمان"} تحتاج متابعة</b><div class="chips" style="margin-top:8px">${late.map(s=>`<button class="chip on" style="background:var(--bad);color:#fff" onclick="openDetail(${A(s)})">${esc(s)}</button>`).join("")}</div></div>`:"";
+  let lessonsN=Object.values(data).reduce((a,x)=>a+x.length,0),startedN=sections.filter(s=>(data[s]||[]).length).length;
+  return `${officialBanner()}${hero}
+  <div class="stats"><div class="stat"><b>${sections.length}</b><span>الأقسام</span></div><div class="stat"><b>${lessonsN}</b><span>الحصص</span></div><div class="stat"><b>${startedN}</b><span>بدأت</span></div><div class="stat ${late.length?"bad":""}"><b>${late.length}</b><span>متأخرة</span></div></div>
+  ${timeline}${alert}${officialHomeCard()}
+  <div class="card row">${ring(all,78,9,"var(--p2)")}<div class="grow"><h3>التقدم الإجمالي</h3><div class="small">${dn} من ${tot} حصة مستهدفة</div><div class="small">الحساب حسب الحصص المسجلة فقط، دون اعتبار التاريخ أو العطل.</div></div></div>
+  <div class="sec-title"><h3>📊 تقدم الأقسام</h3><button class="btn sm" onclick="go('sections')">عرض الكل</button></div>
+  ${orderedSections().slice(0,6).map(scard).join("")||`<div class="empty">لا توجد أقسام.</div>`}`}
+
+function scard(s){let l=latest(s),st=stats(s),S=statusOf(s);
+  return `<button class="scard s-${S.k}" onclick="openDetail(${A(s)})">${ring(st.pct,58,7,S.col)}<div class="grow"><div class="l1"><h4>القسم ${esc(s)}</h4>${lvChip(s)}<span class="badge ${S.cls}" ${!st.target?'onclick="event.stopPropagation();openTargets()" style="cursor:pointer" title="اضغط لتحديد الهدف"':''}>${S.txt}</span></div><div class="ln">${st.target?`${st.recorded}/${st.target} حصة`:"الهدف غير محدد"}${l?` • آخر حصة ${fmtDate(l.date)}`:""}</div><div class="ln">${st.next?"التالي: "+esc(st.next):st.total?"اكتمل البرنامج":"أضف البرنامج الدراسي"}</div></div></button>`}
+
+/* ============ الأقسام ============ */
+function viewSections(){
+  return `<div class="row sb" style="margin-bottom:12px"><h3 style="font-size:20px;font-weight:800">الأقسام</h3><button class="btn primary sm" onclick="openAddSection()">＋ قسم جديد</button></div>
+  <div class="search"><input id="search" placeholder="ابحث عن قسم…" value="${esc(ui.q)}" oninput="ui.q=this.value;renderSecList()"></div>
+  <div class="chips">${[["all","الكل"],["3","الثالثة"],["2","الثانية"],["late","المتأخرة"],["new","لم تبدأ"]].map(([k,t])=>`<button class="chip ${ui.filter===k?"on":""}" onclick="ui.filter='${k}';render()">${t}</button>`).join("")}</div>
+  <div id="secList"></div>`}
+function renderSecList(){
+  let q=ui.q.trim(),list=orderedSections().filter(s=>s.includes(q)).filter(s=>ui.filter==="all"||(ui.filter==="late"?isLate(s):ui.filter==="new"?!(data[s]||[]).length:levelOf(s)===ui.filter));
+  $("secList").innerHTML=list.map(scard).join("")||`<div class="empty"><div class="big">🔎</div>لا توجد نتائج</div>`}
+function openAddSection(){openSheet(`<h3>＋ قسم جديد</h3><p class="small">اكتب رقم القسم بصيغة: المستوى/الرقم (مثال 3/5 أو 2/9)</p><label>اسم القسم<input id="fSecName" placeholder="3/5" inputmode="text" dir="ltr" style="text-align:right"></label><div class="actions"><button class="btn" onclick="closeSheet()">إلغاء</button><button class="btn primary" onclick="addSection()">إضافة</button></div>`);setTimeout(()=>$("fSecName").focus(),300)}
+function addSection(){let v=$("fSecName").value.trim().replace(/\s+/g,"");if(!/^[23]\/\d{1,3}$/.test(v))return toast("الصيغة: 3/5 أو 2/9");if(sections.includes(v))return toast("هذا القسم موجود");sections.push(v);persist();closeSheet();render();toast("تمت إضافة القسم "+v)}
+function deleteSection(s){if(!confirm(`حذف القسم ${s} مع سجل حصصه وحصصه في استعمال الزمن؟ لا يمكن التراجع.`))return;sections=sections.filter(x=>x!==s);delete data[s];Object.keys(timetable).forEach(d=>{timetable[d]=timetable[d].filter(x=>x[2]!==s);if(!timetable[d].length)delete timetable[d]});persist();ui.detail=null;render(true);toast("تم حذف القسم")}
+
+/* ============ تفاصيل القسم ============ */
+function viewDetail(){
+  let s=ui.detail,st=stats(s),S=statusOf(s),lv=levelOf(s),topics=curriculum[lv]||[],exp=0;
+  let head=`<div class="row" style="margin-bottom:14px"><button class="back" onclick="go('sections')" aria-label="رجوع">→</button><div class="grow"><h3 style="font-size:20px;font-weight:800">القسم ${esc(s)}</h3></div><button class="btn danger sm" onclick="deleteSection(${A(s)})">🗑</button></div>`;
+  let hero=`<div class="card"><div class="row">${ring(st.pct,92,10,S.col)}<div class="grow"><div class="row" style="gap:8px;flex-wrap:wrap">${lvChip(s)}<span class="badge ${S.cls}">${S.txt}</span></div><div style="margin-top:6px"><b>${st.recorded}</b> من <b>${st.target||"—"}</b> حصة مسجلة</div><div class="small">نسبة التقدم مبنية على الحصص المسجلة فقط، دون تأثير التاريخ أو العطل.</div></div></div>
+  ${st.total?`<div class="bar"><div class="fill" style="width:${st.pct}%"></div></div>`:""}
+  <div class="actions"><button class="btn primary" onclick="openLesson(${A(s)})">✏️ تسجيل حصة</button></div>${st.next?`<div class="small" style="margin-top:10px">📖 الدرس القادم: <b style="color:var(--ink)">${esc(tinfo(lv,st.next).title)}</b></div>`:""}</div>`;
+  let seg=`<div class="seg"><button class="${ui.detailTab==="lessons"?"on":""}" onclick="ui.detailTab='lessons';render()">الدروس (${topics.length})</button><button class="${ui.detailTab==="history"?"on":""}" onclick="ui.detailTab='history';render()">سجل الحصص (${(data[s]||[]).length})</button></div>`;
+  let body;
+  if(ui.detailTab==="lessons"){
+    body=topics.length?`<div class="card" style="padding:6px 14px"><div class="small" style="padding:8px 0">اضغط الدائرة لتسجيل الدرس منجزًا بسرعة، أو اضغط العنوان لتسجيل حصة مفصّلة.</div>${topics.map((t,i)=>{let info=topicInfo(s,t);return `<div class="trow ${info.st}"><button class="check" onclick="toggleTopic(${A(s)},${i})" aria-label="إنجاز">${info.st==="done"?"✓":info.st==="part"?"◐":""}</button><button class="tmain" onclick="openLessonIdx(${A(s)},${i})"><div class="tt">${i+1}. ${esc(tinfo(lv,t).title)}${t===st.next?'<span class="nextflag">التالي</span>':""}</div>${tinfo(lv,t).sub?`<div class="small">${esc(tinfo(lv,t).sub)}</div>`:""}${info.st==="part"?`<div class="small">جزئي ${info.p}%</div>`:""}</button></div>`}).join("")}</div>`
+    :`<div class="card empty"><div class="big">📖</div>لم تُضف دروس المستوى ${lv==="3"?"الثالث":"الثاني"} بعد.<div class="actions" style="justify-content:center"><button class="btn primary" onclick="ui.level='${lv}';go('curriculum')">إضافة البرنامج</button></div></div>`;
+  }else{
+    let a=(data[s]||[]).map((l,i)=>({l,i})).sort((x,y)=>y.l.date.localeCompare(x.l.date));
+    body=a.length?`<div class="card" style="padding:6px 14px">${a.map(({l,i})=>`<div class="hist"><div class="row sb"><b>${esc(l.topic)}</b><span class="badge ${l.progress>=100?"b-ok":"b-warn"}">${l.progress}%</span></div><div class="small">${fmtDate(l.date)}</div>${l.done?`<p style="margin-top:6px">${esc(l.done)}</p>`:""}${l.notes?`<div class="small" style="margin-top:4px">📝 ${esc(l.notes)}</div>`:""}<div class="row" style="margin-top:8px"><button class="btn sm" onclick="openLesson(${A(s)},'',{s:${A(s)},i:${i}})">تعديل</button><button class="btn danger sm" onclick="deleteLesson(${A(s)},${i})">حذف</button></div></div>`).join("")}</div>`
+    :`<div class="card empty"><div class="big">📝</div>لا توجد حصص مسجلة بعد</div>`;
+  }
+  return head+hero+seg+body}
+function toggleTopic(s,i){let t=(curriculum[levelOf(s)]||[])[i];if(t===undefined)return;let info=topicInfo(s,t);
+  if(info.st==="done"){let removed=(data[s]||[]).filter(l=>l.topic===t&&l.progress>=100),idx=removed.slice();if(!confirm("إلغاء إنجاز هذا الدرس؟"))return;data[s]=(data[s]||[]).filter(l=>!(l.topic===t&&l.progress>=100));persist();render();toast("أُلغي الإنجاز",()=>{data[s]=(data[s]||[]).concat(idx);persist();render()})}
+  else{let rec={date:localDate(),topic:t,done:"",progress:100,notes:""};(data[s]??=[]).push(rec);persist();render();toast("✓ تم تسجيل «"+t+"»",()=>{data[s]=data[s].filter(x=>x!==rec);persist();render()})}}
+function deleteLesson(s,i){if(!confirm("حذف هذه الحصة من السجل؟"))return;let rec=data[s][i];data[s].splice(i,1);persist();render();toast("تم الحذف",()=>{data[s].splice(i,0,rec);persist();render()})}
+function openLessonIdx(s,i){openLesson(s,(curriculum[levelOf(s)]||[])[i])}
+
+/* ============ نافذة تسجيل حصة ============ */
+let lessonCtx={s:"",edit:null,lastSug:""};
+function openLesson(s,topic,edit){
+  let rec=edit?data[edit.s][edit.i]:null;s=edit?edit.s:(isSection(s)?s:sections[0]);lessonCtx={s,edit,lastSug:""};
+  if(!sections.length)return toast("أضف قسمًا أولًا");
+  let prog=rec?rec.progress:100;
+  openSheet(`<h3>${edit?"تعديل الحصة":"✏️ تسجيل حصة"}</h3>
+  ${edit?`<div class="small">القسم ${esc(s)}</div>`:`<label>القسم</label><div class="chips" id="secChips">${orderedSections().map(x=>`<button class="chip ${x===s?"on":""}" data-s="${esc(x)}" onclick="pickSec(${A(x)})">${esc(x)}</button>`).join("")}</div>`}
+  <div class="two"><label>التاريخ<input id="fDate" type="date" value="${rec?esc(rec.date):localDate()}"></label><label>نسبة الإنجاز <span id="pv">${prog}%</span><input id="fProg" type="range" min="0" max="100" step="5" value="${prog}" oninput="$('pv').textContent=this.value+'%'"></label></div>
+  <div class="chips" style="margin-top:4px">${[25,50,75,100].map(p=>`<button class="chip" onclick="$('fProg').value=${p};$('pv').textContent='${p}%'">${p}%</button>`).join("")}</div>
+  <div id="casc"></div>
+  <label>الدرس المختار <span class="small">(يُملأ تلقائيًا، أو اكتب عنوانًا حرًا)</span><input id="fTopic" list="topicDL" oninput="syncCasc()" placeholder="اختر من البرنامج أو اكتب عنوانًا" value="${esc(rec?rec.topic:topic||"")}"><datalist id="topicDL"></datalist></label>
+  <div id="sugg" class="chips" style="margin-top:8px"></div>
+  <label>ما تم إنجازه<textarea id="fDone" rows="3" placeholder="ملخص ما تناولته في الحصة">${esc(rec?rec.done:"")}</textarea></label>
+  <label>ملاحظات<textarea id="fNotes" rows="2">${esc(rec?rec.notes:"")}</textarea></label>
+  <div class="actions"><button class="btn" onclick="closeSheet()">إلغاء</button><button class="btn primary" onclick="saveLesson()">حفظ ✓</button></div>`);
+  refreshSugg(!edit&&!topic)}
+function pickSec(s){lessonCtx.s=s;document.querySelectorAll("#secChips .chip").forEach(c=>c.classList.toggle("on",c.dataset.s===s));refreshSugg(true)}
+function refreshSugg(autofill){let s=lessonCtx.s,lv=levelOf(s),topics=curriculum[lv]||[],done=completedTopics(s),next=topics.filter(t=>!done.has(t)).slice(0,3),inp=$("fTopic");
+  $("topicDL").innerHTML=topics.map(t=>`<option value="${esc(t)}"></option>`).join("");
+  $("sugg").innerHTML=next.length?`<span class="small" style="align-self:center">اقتراح:</span>`+next.map((t,i)=>`<button class="chip" onclick="$('fTopic').value=${A(t)};syncCasc()">${esc(t)}</button>`).join(""):"";
+  if(autofill&&next[0]&&(!inp.value||inp.value===lessonCtx.lastSug))inp.value=next[0];lessonCtx.lastSug=next[0]||"";syncCasc()}
+function syncCasc(){let lv=levelOf(lessonCtx.s),m=(curMeta[lv]||{})[$("fTopic").value.trim()];if(m)lessonCtx.sel={theme:m.theme,periode:m.periode,chapitre:m.chapitre};renderCasc(false)}
+function cascPick(f,v){let sel=lessonCtx.sel=lessonCtx.sel||{};sel[f]=v;if(f==="theme"){sel.periode=sel.chapitre=undefined}if(f==="periode")sel.chapitre=undefined;renderCasc(true)}
+function cascSeance(k){$("fTopic").value=k}
+function renderCasc(setTopic){let box=$("casc");if(!box)return;let lv=levelOf(lessonCtx.s),M=curMeta[lv]||{},items=(curriculum[lv]||[]).filter(t=>M[t]);
+  if(!items.length){box.innerHTML="";return}
+  let sel=lessonCtx.sel=lessonCtx.sel||{},u=a=>[...new Set(a)],done=completedTopics(lessonCtx.s);
+  let themes=u(items.map(t=>M[t].theme));if(!themes.includes(sel.theme))sel.theme=themes[0];
+  let i1=items.filter(t=>M[t].theme===sel.theme),pers=u(i1.map(t=>M[t].periode));if(!pers.includes(sel.periode))sel.periode=pers[0];
+  let i2=i1.filter(t=>M[t].periode===sel.periode),chs=u(i2.map(t=>M[t].chapitre));if(!chs.includes(sel.chapitre))sel.chapitre=chs[0];
+  let i3=i2.filter(t=>M[t].chapitre===sel.chapitre),inp=$("fTopic");
+  if(setTopic)inp.value=i3.find(t=>!done.has(t))||i3[0]||"";
+  let cur=inp.value.trim(),has=i3.includes(cur);
+  let opt=(v,l,on)=>`<option value="${esc(v)}" ${on?"selected":""}>${esc(l)}</option>`;
+  let sl=(lab,f,vals,cur0)=>`<label>${lab}<select dir="ltr" style="text-align:left" onchange="cascPick('${f}',this.value)">${vals.map(v=>opt(v,v||"—",v===cur0)).join("")}</select></label>`;
+  let cut=x=>x.length>70?x.slice(0,70)+"…":x;
+  box.innerHTML=sl("Thème","theme",themes,sel.theme)+sl("Période","periode",pers,sel.periode)+sl("Chapitre","chapitre",chs,sel.chapitre)
+   +`<label>Séance : Tâche à réussir<select dir="ltr" style="text-align:left" onchange="cascSeance(this.value)">${has?"":opt("","— اختر —",true)}${i3.map(t=>opt(t,(done.has(t)?"✓ ":"")+[M[t].seance,cut(M[t].tache)].filter(Boolean).join(" : "),t===cur)).join("")}</select></label>`}
+function saveLesson(){let s=lessonCtx.s,topic=$("fTopic").value.trim();if(!topic){$("fTopic").focus();return toast("أدخل اسم الدرس")}
+  let l={date:$("fDate").value||localDate(),topic,done:$("fDone").value.trim(),progress:+$("fProg").value,notes:$("fNotes").value.trim()};
+  if(lessonCtx.edit)data[s][lessonCtx.edit.i]=l;else(data[s]??=[]).push(l);
+  persist();closeSheet();render();toast(lessonCtx.edit?"تم تحديث الحصة ✓":"تم حفظ الحصة ✓")}
+
+/* ============ استعمال الزمن ============ */
+function viewWeek(){
+  let sl=slotsOf(ui.day);
+  return `<div class="row sb" style="margin-bottom:12px"><h3 style="font-size:20px;font-weight:800">استعمال الزمن</h3><button class="btn primary sm" onclick="openSlot(ui.day,null)">＋ حصة</button></div>
+  <div class="days">${days.map(d=>`<button class="day ${d===ui.day?"on":""} ${d===todayName()?"today":""}" onclick="ui.day=${A(d)};render()">${d}<i>${slotsOf(d).length?slotsOf(d).length+" حصص":"—"}</i></button>`).join("")}</div>
+  ${sl.length?sl.map((x,i)=>`<div class="slotc"><div class="time">${x[0]}<small>إلى ${x[1]}</small></div><div class="grow"><b style="font-size:16px">${isSection(x[2])?"القسم "+esc(x[2]):esc(x[2])}</b>${isSection(x[2])?`<div>${lvChip(x[2])}</div>`:`<div class="small">نشاط</div>`}</div><div class="mini">${isSection(x[2])?`<button onclick="openLesson(${A(x[2])})" title="تسجيل">✏️</button>`:""}<button onclick="openSlot(${A(ui.day)},${i})" title="تعديل">⋯</button></div></div>`).join(""):`<div class="card empty"><div class="big">🌿</div>لا توجد حصص يوم ${ui.day}</div>`}`}
+let slotCtx={};
+function openSlot(day,i){let old=i!=null?timetable[day][i]:null;slotCtx={day,i};
+  openSheet(`<h3>${old?"تعديل الحصة المبرمجة":"حصة مبرمجة جديدة"}</h3>
+  <label>اليوم<select id="fDay">${days.map(d=>`<option ${d===day?"selected":""}>${d}</option>`).join("")}</select></label>
+  <div class="two"><label>من<input id="fStart" type="time" value="${old?old[0]:"08:00"}"></label><label>إلى<input id="fEnd" type="time" value="${old?old[1]:"10:00"}"></label></div>
+  <label>القسم أو النشاط</label><div class="chips" style="margin-top:6px">${orderedSections().map(x=>`<button class="chip" onclick="$('fSec').value=${A(x)}">${esc(x)}</button>`).join("")}</div>
+  <input id="fSec" value="${esc(old?old[2]:sections[0]||"")}" placeholder="مثال 3/5 أو أنشطة موازية" style="margin-top:0">
+  <div class="actions">${old?`<button class="btn danger" onclick="deleteSlot()">حذف</button>`:`<button class="btn" onclick="closeSheet()">إلغاء</button>`}<button class="btn primary" onclick="saveSlot()">حفظ ✓</button></div>`)}
+function saveSlot(){let d=$("fDay").value,a=$("fStart").value,b=$("fEnd").value,s=$("fSec").value.trim();
+  if(!a||!b||toMin(b)<=toMin(a))return toast("تحقق من التوقيت");if(!s)return toast("حدد القسم أو النشاط");
+  if(slotCtx.i!=null){timetable[slotCtx.day].splice(slotCtx.i,1);if(!timetable[slotCtx.day].length)delete timetable[slotCtx.day]}
+  (timetable[d]??=[]).push([a,b,s]);sortDay(d);ui.day=d;persist();closeSheet();render();toast("تم تحديث استعمال الزمن ✓")}
+function deleteSlot(){if(!confirm("حذف هذه الحصة من استعمال الزمن؟"))return;let{day,i}=slotCtx;timetable[day].splice(i,1);if(!timetable[day].length)delete timetable[day];persist();closeSheet();render();toast("تم الحذف")}
+
+/* ============ البرنامج الدراسي ============ */
+let cf={theme:"",periode:"",chapitre:"",seance:"",tache:""};
+function uniqF(lv,f){return [...new Set(Object.values(curMeta[lv]||{}).map(m=>m[f]).filter(Boolean))]}
+function nextSeance(lv){let mx=0;Object.values(curMeta[lv]||{}).forEach(m=>{if(m.chapitre===cf.chapitre){let n=+((String(m.seance).match(/\d+/)||[0])[0]);if(n>mx)mx=n}});return "Séance "+(mx+1)}
+function viewCurriculum(){
+  let lv=ui.level,arr=curriculum[lv]||[];
+  if(!cf.seance)cf.seance=nextSeance(lv);
+  let dl=(id,vals)=>`<datalist id="${id}">${vals.map(v=>`<option value="${esc(v)}"></option>`).join("")}</datalist>`;
+  let per=[...new Set(["Période 1","Période 2","Période 3","Période 4","Période 5",...uniqF(lv,"periode")])];
+  let last={theme:"",periode:"",chapitre:""},list="";
+  arr.forEach((t,i)=>{let m=(curMeta[lv]||{})[t],hd="";
+    if(m){if(m.theme!==last.theme){hd+=`<div class="grp g1">${esc(m.theme||"—")}</div>`;last={theme:m.theme,periode:"",chapitre:""}}
+      if(m.periode!==last.periode||m.chapitre!==last.chapitre){hd+=`<div class="grp g2">${esc([m.periode,m.chapitre].filter(Boolean).join(" — ")||"—")}</div>`;last.periode=m.periode;last.chapitre=m.chapitre}}
+    let ti=tinfo(lv,t);
+    list+=hd+`<div class="trow"><span class="num">${i+1}</span><div class="tmain tt" style="cursor:default">${esc(ti.title)}</div><div class="mini"><button onclick="moveTopic(${i},-1)" ${i===0?"disabled":""}>↑</button><button onclick="moveTopic(${i},1)" ${i===arr.length-1?"disabled":""}>↓</button><button onclick="editTopic(${i})">✎</button><button class="d" onclick="removeTopic(${i})">✕</button></div></div>`});
+  return `<h3 style="font-size:20px;font-weight:800;margin-bottom:12px">البرنامج الدراسي</h3>
+  <div class="seg"><button class="${lv==="3"?"on":""}" onclick="ui.level='3';cf.seance='';render()">الثالثة إعدادي</button><button class="${lv==="2"?"on":""}" onclick="ui.level='2';cf.seance='';render()">الثانية إعدادي</button></div>
+  <div class="card"><h3>✍️ إضافة يدوية</h3><div class="small" style="margin-top:4px">الترتيب: Thème ← Période ← Chapitre ← Séance ← Tâche à réussir. تبقى الحقول محفوظة بعد كل إضافة لتسريع الإدخال.</div>
+    <label>Thème<input dir="ltr" style="text-align:left" list="dlTheme" value="${esc(cf.theme)}" oninput="cf.theme=this.value" placeholder="Thème 1 : Matière : structure et transformations"></label>${dl("dlTheme",uniqF(lv,"theme"))}
+    <label>Période<input dir="ltr" style="text-align:left" list="dlPer" value="${esc(cf.periode)}" oninput="cf.periode=this.value" placeholder="Période 1"></label>${dl("dlPer",per)}
+    <label>Chapitre <span class="small">(اتركه فارغًا أو — للحصة 0)</span><input dir="ltr" style="text-align:left" list="dlCh" value="${esc(cf.chapitre)}" oninput="cf.chapitre=this.value" onchange="cf.seance=nextSeance(ui.level);$('cfSea').value=cf.seance" placeholder="Les molécules"></label>${dl("dlCh",uniqF(lv,"chapitre"))}
+    <label>Séance<input id="cfSea" dir="ltr" style="text-align:left" value="${esc(cf.seance)}" oninput="cf.seance=this.value" placeholder="Séance 1"></label>
+    <label>Tâche à réussir<textarea id="cfTache" dir="ltr" style="text-align:left" rows="3" oninput="cf.tache=this.value" placeholder="Décrire la composition de certaines matières en termes de molécules.">${esc(cf.tache)}</textarea></label>
+    <button class="btn primary block" style="margin-top:12px" onclick="addManual()">＋ إضافة</button>
+    <details style="margin-top:14px"><summary class="small" style="cursor:pointer;font-weight:700">لصق من Excel (5 أعمدة: Thème، Période، Chapitre، Séance، Tâche)</summary><textarea id="newTopics" dir="ltr" style="text-align:left" rows="6" placeholder="انسخ الخلايا من Excel والصقها هنا"></textarea><button class="btn primary block" style="margin-top:10px" onclick="addCurriculumTopics()">إضافة اللائحة</button></details></div>
+  <div class="card"><h3>📥 استيراد من Excel</h3><div class="small" style="margin-top:4px">يتعرف على أعمدة Thème / Période / Chapitre / Séance / Tâche à réussir تلقائيًا، مع معاينة قبل الاعتماد.</div>
+    <label class="drop" id="drop" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="event.preventDefault();this.classList.remove('over');handleImportFile(event.dataTransfer.files[0])"><b>📄 اختر ملف Excel أو اسحبه هنا</b><span class="small">xlsx • xls • csv</span><input type="file" id="xlFile" accept=".xlsx,.xls,.xlsm,.ods,.csv,.tsv" onchange="handleImportFile(this.files[0]);this.value=''"></label>
+    <div id="importPreview"></div></div>
+  <div class="sec-title"><h3>دروس ${lv==="3"?"الثالثة":"الثانية"} (${arr.length})</h3></div>
+  <div class="card" style="padding:6px 12px">${arr.length?list:`<div class="empty"><div class="big">📚</div>لم تُضف دروس هذا المستوى بعد</div>`}</div>`}
+function addManual(){let lv=ui.level,m={theme:cf.theme.trim(),periode:cf.periode.trim(),chapitre:cleanCh(cf.chapitre),seance:cf.seance.trim(),tache:cf.tache.trim()};
+  if(!m.tache){let e=$("cfTache");e&&e.focus();return toast("اكتب Tâche à réussir")}
+  let key=mkKey(m);if(curriculum[lv].includes(key))return toast("هذه الحصة موجودة");
+  curriculum[lv].push(key);curMeta[lv][key]=m;persist();cf.tache="";cf.seance=nextSeance(lv);render();toast("أُضيفت ✓");setTimeout(()=>{let e=$("cfTache");e&&e.focus()},60)}
+function addCurriculumTopics(){let lv=ui.level,lines=$("newTopics").value.split(/\r?\n/).filter(l=>l.trim()),add=0,dup=0;
+  lines.forEach(l=>{let c=l.split("\t").map(x=>x.trim());
+    if(c.length>=5){if(FR(c[0]).startsWith("theme")&&FR(c[2]).startsWith("chapitre"))return;
+      let m={theme:c[0],periode:c[1],chapitre:cleanCh(c[2]),seance:c[3],tache:c.slice(4).join(" ").trim()};if(!m.tache)return;let k=mkKey(m);
+      if(curriculum[lv].includes(k)){dup++;return}curriculum[lv].push(k);curMeta[lv][k]=m;add++}
+    else{let t=c[0];if(!t)return;if(curriculum[lv].includes(t)){dup++;return}curriculum[lv].push(t);add++}});
+  if(!add&&!dup)return toast("ألصق الأسطر من Excel");persist();render();toast(`أُضيف ${add} درسًا`+(dup?` (تجاهل ${dup} مكرر)`:""))}
+function editTopic(i){let lv=ui.level,old=curriculum[lv][i],m=curMeta[lv][old];
+  if(!m)return openSheet(`<h3>تعديل عنوان الدرس</h3><label>العنوان<input id="fTopicEdit" value="${esc(old)}"></label><div class="actions"><button class="btn" onclick="closeSheet()">إلغاء</button><button class="btn primary" onclick="saveTopicEdit(${i})">حفظ</button></div>`);
+  let f=(id,lab,v)=>`<label>${lab}<input id="${id}" dir="ltr" style="text-align:left" value="${esc(v)}"></label>`;
+  openSheet(`<h3>تعديل الحصة</h3>${f("eTheme","Thème",m.theme)}<div class="two">${f("ePer","Période",m.periode)}${f("eSea","Séance",m.seance)}</div>${f("eCh","Chapitre",m.chapitre)}<label>Tâche à réussir<textarea id="eTache" dir="ltr" style="text-align:left" rows="3">${esc(m.tache)}</textarea></label><div class="actions"><button class="btn" onclick="closeSheet()">إلغاء</button><button class="btn primary" onclick="saveMetaEdit(${i})">حفظ</button></div>`)}
+function saveMetaEdit(i){let lv=ui.level,old=curriculum[lv][i],m={theme:$("eTheme").value.trim(),periode:$("ePer").value.trim(),chapitre:cleanCh($("eCh").value),seance:$("eSea").value.trim(),tache:$("eTache").value.trim()};
+  if(!m.tache)return toast("Tâche à réussir فارغة");let k=mkKey(m);if(k!==old&&curriculum[lv].includes(k))return toast("هذه الحصة موجودة");
+  curriculum[lv][i]=k;delete curMeta[lv][old];curMeta[lv][k]=m;sections.filter(s=>levelOf(s)===lv).forEach(s=>(data[s]||[]).forEach(l=>{if(l.topic===old)l.topic=k}));persist();closeSheet();render();toast("تم التعديل ✓")}
+function moveTopic(i,d){let arr=curriculum[ui.level],j=i+d;if(j<0||j>=arr.length)return;[arr[i],arr[j]]=[arr[j],arr[i]];persist();render()}
+function removeTopic(i){if(!confirm("حذف هذا الدرس من البرنامج؟"))return;let lv=ui.level,t=curriculum[lv].splice(i,1)[0],m=curMeta[lv][t];delete curMeta[lv][t];persist();render();toast("تم الحذف",()=>{curriculum[lv].splice(i,0,t);if(m)curMeta[lv][t]=m;persist();render()})}
+function saveTopicEdit(i){let lv=ui.level,old=curriculum[lv][i],t=$("fTopicEdit").value.trim();if(!t)return toast("العنوان فارغ");if(curriculum[lv].some((x,j)=>j!==i&&x===t))return toast("هذا الدرس موجود");curriculum[lv][i]=t;sections.filter(s=>levelOf(s)===lv).forEach(s=>(data[s]||[]).forEach(l=>{if(l.topic===old)l.topic=t}));persist();closeSheet();render();toast("تم التعديل ✓")}
+
+/* ===== استيراد Excel / CSV ===== */
+let importPlan=null;
+function loadXLSX(){return new Promise((res,rej)=>{if(window.XLSX)return res();let s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";s.onload=res;s.onerror=()=>rej(new Error("xlsx lib"));document.head.appendChild(s)})}
+function normDigits(s){return String(s).replace(/[٠-٩]/g,d=>"٠١٢٣٤٥٦٧٨٩".indexOf(d))}
+function nrm(s){return normDigits(s).replace(/[ً-ْـ]/g,"").replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").toLowerCase()}
+function cleanCell(v){return String(v??"").replace(/\s+/g," ").trim()}
+function detectLevel(s){s=nrm(s);if(/الثالث|ثالث|(^|\D)3(\D|$)|third|troisi/.test(s))return"3";if(/الثاني|ثاني|(^|\D)2(\D|$)|second|deuxi/.test(s))return"2";return""}
+function isLevelRow(cells){let ne=cells.filter(Boolean);if(ne.length!==1)return"";let t=nrm(ne[0]);if(t.length>45||!/(الثالثه|الثانيه|مستوي|مستوى|اعدادي|level|niveau)/.test(t))return"";return detectLevel(t)}
+function parseCSV(t){t=t.replace(/^﻿/,"");let first=t.split(/\r?\n/)[0]||"",d=[",",";","\t"].sort((a,b)=>first.split(b).length-first.split(a).length)[0],rows=[],row=[],cur="",q=false;for(let i=0;i<t.length;i++){let c=t[i];if(q){if(c=='"'){if(t[i+1]=='"'){cur+='"';i++}else q=false}else cur+=c}else if(c=='"')q=true;else if(c===d){row.push(cur);cur=""}else if(c=="\n"||c=="\r"){if(c=="\r"&&t[i+1]=="\n")i++;row.push(cur);rows.push(row);row=[];cur=""}else cur+=c}if(cur!==""||row.length){row.push(cur);rows.push(row)}return rows}
+let importMeta={};
+function detectStruct(rows){for(let i=0;i<Math.min(rows.length,10);i++){let c={};rows[i].forEach((v,j)=>{let n=FR(v);if(/^theme/.test(n))c.theme=j;else if(/^periode/.test(n))c.periode=j;else if(/^chapitre/.test(n))c.chapitre=j;else if(/^seance/.test(n))c.seance=j;else if(/^tache/.test(n))c.tache=j});if(c.tache!==undefined&&(c.chapitre!==undefined||c.seance!==undefined))return{hr:i,cols:c}}return null}
+function analyzeRows(rows,sheetName){
+rows=rows.map(r=>r.map(cleanCell));
+let st=detectStruct(rows);if(st){let lv0=detectLevel(sheetName),out={"3":[],"2":[],"":[]};for(let i=st.hr+1;i<rows.length;i++){let r=rows[i];if(!r.some(Boolean))continue;let g=k=>st.cols[k]===undefined?"":(k==="chapitre"?cleanCh(r[st.cols[k]]):cleanCell(r[st.cols[k]]));let m={theme:g("theme"),periode:g("periode"),chapitre:g("chapitre"),seance:g("seance"),tache:g("tache")};if(!m.tache)continue;let key=mkKey(m);importMeta[key]=m;out[lv0].push(key)}return out}let lessonCol=-1,levelCol=-1,start=0;
+for(let i=0;i<Math.min(rows.length,10)&&lessonCol<0;i++){let lc=-1,vc=-1;rows[i].forEach((c,j)=>{let n=nrm(c);if(!n||n.length>25)return;if(/^(المستوي|مستوي|المستوى|مستوى|level|niveau|السنه)$/.test(n))vc=j;else if(/^(الدرس|الدروس|عنوان الدرس|عناوين الدروس|درس|lesson|topic|titre|الوحده|الوحدات|المحور|العنوان)$/.test(n)){if(lc<0||/درس|lesson|titre/.test(n))lc=j}});if(lc>=0){lessonCol=lc;levelCol=vc;start=i+1}}
+if(lessonCol<0){let score={};rows.forEach(r=>r.forEach((c,j)=>{if(c.length>=3&&/[^\d\s.,\-\/]/.test(c))score[j]=(score[j]||0)+1}));let best=Object.keys(score).sort((a,b)=>score[b]-score[a])[0];lessonCol=best===undefined?0:+best}
+let cur=detectLevel(sheetName),out={"3":[],"2":[],"":[]},skip=/^(الدرس|الدروس|درس|المستوي|المستوى|العنوان|ملاحظات|الاسبوع|الشهر|رقم|lesson|topic|titre)$/;
+for(let i=start;i<rows.length;i++){let r=rows[i];if(!r.some(Boolean))continue;let sl=isLevelRow(r);if(sl){cur=sl;continue}
+let t=(r[lessonCol]||"").replace(/^\s*[\d٠-٩]+\s*[-.)–:]\s*/,"");if(!t||t.length<2||/^[\d\s.,\-\/]+$/.test(t)||skip.test(nrm(t)))continue;
+let lv=cur;if(levelCol>=0&&r[levelCol]){let d=detectLevel(r[levelCol]);if(d)lv=d}out[lv].push(t)}
+return out}
+function buildPlan(sheets){let plan={"3":[],"2":[],"":[]};importMeta={};let hasS=sheets.some(([n,r])=>detectStruct(r.map(x=>x.map(cleanCell))));if(hasS)sheets=sheets.filter(([n,r])=>detectStruct(r.map(x=>x.map(cleanCell))));sheets.forEach(([name,rows])=>{let o=analyzeRows(rows,name);["3","2",""].forEach(k=>{let seen=new Set(plan[k]);o[k].forEach(t=>{if(!seen.has(t)){seen.add(t);plan[k].push(t)}})})});return plan}
+async function handleImportFile(f){if(!f)return;let box=$("importPreview");box.innerHTML='<div class="small" style="margin-top:10px">⏳ جارٍ قراءة الملف…</div>';
+try{let buf=await f.arrayBuffer(),ext=f.name.split(".").pop().toLowerCase(),sheets=[];
+if(["csv","tsv","txt"].includes(ext)){let txt;try{txt=new TextDecoder("utf-8",{fatal:true}).decode(buf)}catch(e){txt=new TextDecoder("windows-1256").decode(buf)}sheets=[[f.name.replace(/\.[^.]+$/,""),parseCSV(txt)]]}
+else{try{await loadXLSX()}catch(e){box.innerHTML='<div class="alert warn">تعذّر تحميل مكتبة قراءة Excel (تحتاج اتصالًا بالإنترنت). بدائل: احفظ الملف بصيغة CSV ثم اخترْه، أو استعمل الإضافة اليدوية.</div>';return}
+let wb=XLSX.read(buf,{type:"array"});sheets=wb.SheetNames.map(n=>[n,XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,raw:false,defval:""})])}
+importPlan={plan:buildPlan(sheets),file:f.name};renderImportPreview()}
+catch(e){box.innerHTML='<div class="alert bad">تعذّرت قراءة الملف: '+esc(e.message)+'</div>'}}
+function renderImportPreview(){let box=$("importPreview");if(!box||!importPlan)return;let p=importPlan.plan,tot=p["3"].length+p["2"].length+p[""].length;
+if(!tot){box.innerHTML='<div class="alert warn">لم يُعثر على دروس في الملف. ضع الدروس في عمود واحد، ويُفضَّل أن يحمل عنوانه «الدرس».</div>';importPlan=null;return}
+let blk=(k,title)=>p[k].length?`<div class="prevblk"><b>${title}: ${p[k].length} درسًا</b><div class="small">${p[k].slice(0,4).map(esc).join(" • ")}${p[k].length>4?" …":""}</div></div>`:"";
+box.innerHTML=`<div class="prev"><b>معاينة: ${esc(importPlan.file)}</b>${blk("3","الثالثة إعدادي")}${blk("2","الثانية إعدادي")}${p[""].length?blk("","دروس بدون مستوى محدد")+`<label>أين تُضاف الدروس غير المحددة؟<select id="unassignedTo"><option value="3">الثالثة إعدادي</option><option value="2">الثانية إعدادي</option><option value="">تجاهلها</option></select></label>`:""}<label>طريقة الإضافة<select id="importMode"><option value="merge">دمج: إضافة الجديد بعد الموجود (تجاهل المكرر)</option><option value="replace">استبدال برنامج المستويات المستوردة</option></select></label><div class="actions"><button class="btn" onclick="cancelImport()">إلغاء</button><button class="btn primary" onclick="confirmImport()">اعتماد ✓</button></div></div>`;
+let u=$("unassignedTo");if(u)u.value=ui.level}
+function cancelImport(){importPlan=null;let b=$("importPreview");if(b)b.innerHTML=""}
+function confirmImport(){if(!importPlan)return;let p={"3":[...importPlan.plan["3"]],"2":[...importPlan.plan["2"]]},u=$("unassignedTo"),mode=$("importMode").value;
+if(u&&u.value)p[u.value]=p[u.value].concat(importPlan.plan[""].filter(t=>!p[u.value].includes(t)));
+if(mode==="replace"&&!confirm("سيُستبدل برنامج المستويات المستوردة. الدروس المسجلة في الحصص قد لا تُحتسب إذا اختلفت عناوينها. متابعة؟"))return;
+let added=0;["3","2"].forEach(lv=>{if(!p[lv].length)return;if(mode==="replace"){curriculum[lv]=p[lv];curMeta[lv]={};added+=p[lv].length}else{let ex=new Set(curriculum[lv]||[]),n=p[lv].filter(t=>!ex.has(t));curriculum[lv]=(curriculum[lv]||[]).concat(n);added+=n.length}p[lv].forEach(t=>{if(importMeta[t])curMeta[lv][t]=importMeta[t]})});
+importPlan=null;persist();render();toast(`تم استيراد ${added} درسًا ✓`)}
+
+/* ============ الاستحقاقات الرسمية 2026/2027 (تفاعلية) ============ */
+const EVT={mine:{ic:'⭐',t:'موعد شخصي',c:'var(--l3)',bg:'var(--l3bg)'},test:{ic:'✏️',t:'فروض المراقبة',c:'var(--p2)',bg:'var(--l2bg)'},exam:{ic:'📝',t:'امتحان موحد',c:'var(--bad)',bg:'var(--badbg)'},grades:{ic:'🧮',t:'مسك النقط',c:'var(--warn)',bg:'var(--warnbg)'},council:{ic:'👥',t:'مجالس',c:'var(--l3)',bg:'var(--l3bg)'},massar:{ic:'💻',t:'منظومة مسار',c:'var(--p)',bg:'var(--soft)'},results:{ic:'📬',t:'توزيع النتائج',c:'var(--ok)',bg:'var(--okbg)'},other:{ic:'📌',t:'أخرى',c:'var(--muted)',bg:'var(--soft)'}};
+const defaultOfficialEvents=[
+['e1','الأول','test','2027-01-04','2027-01-09','إجراء آخر فروض المراقبة المستمرة',''],
+['e2','الأول','grades','2027-01-16','2027-01-16','انتهاء مسك نقط آخر فروض المراقبة المستمرة',''],
+['e3','الأول','exam','2027-01-18','2027-01-19','إجراء الامتحان الموحد المحلي لنيل شهادة السلك الإعدادي',''],
+['e4','الأول','grades','2027-01-20','2027-01-20','انتهاء مسك نقط الامتحان الموحد المحلي لنيل شهادة السلك الإعدادي',''],
+['e5','الأول','massar','2027-01-21','2027-01-21','بداية استخراج بيانات النقط عبر منظومة مسار','ابتداءً من هذا التاريخ'],
+['e6','الأول','council','2027-01-21','2027-01-22','عقد مجالس الأقسام',''],
+['e7','الأول','results','2027-01-23','2027-01-23','توزيع بيانات النقط',''],
+['e8','الثاني','test','2027-06-14','2027-06-19','إجراء آخر فروض المراقبة المستمرة',''],
+['e10','الثاني','other','2027-06-21','2027-06-22','الإعداد الجماعي لإجراء الامتحان الموحد الجهوي',''],
+['e9','الثاني','grades','2027-06-22','2027-06-22','انتهاء مسك نقط آخر فروض المراقبة المستمرة',''],
+['e11','الثاني','exam','2027-06-23','2027-06-24','إجراء الامتحان الموحد الجهوي لنيل شهادة السلك الإعدادي',''],
+['e12','الثاني','grades','2027-06-30','2027-06-30','انتهاء مسك نقط الامتحان الموحد الجهوي',''],
+['e13','الثاني','massar','2027-07-01','2027-07-01','بداية استخراج بيانات النقط عبر منظومة مسار','ابتداءً من فاتح يوليوز'],
+['e14','الثاني','council','2027-07-01','2027-07-02','عقد مجالس الأقسام والتوجيه',''],
+['e15','الثاني','results','2027-07-03','2027-07-03','توزيع بيانات النقط','']
+].map(([id,cycle,kind,start,end,title,note])=>({id,cycle,kind,start,end,title,note,done:false}));
+let officialEvents=load(KEYS.events,null);
+if(!Array.isArray(officialEvents))officialEvents=defaultOfficialEvents.map(e=>({...e}));
+
+const dd=(a,b)=>Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
+const K=e=>EVT[e.kind]||EVT.other;
+function evFmt(d){try{return new Date(d+'T12:00:00').toLocaleDateString('ar-MA',{day:'numeric',month:'short',year:'numeric'})}catch(x){return d}}
+function evRange(e){return evFmt(e.start)+(e.start!==e.end?' — '+evFmt(e.end):'')}
+function sortedEvents(){return officialEvents.slice().sort((a,b)=>a.start.localeCompare(b.start)||a.end.localeCompare(b.end))}
+function nextEvent(){let t=localDate();return sortedEvents().find(e=>!e.done&&e.end>=t)||null}
+function evState(e){let t=localDate();if(e.done)return{k:'done',label:'منجز ✓',cls:'b-ok',days:0};
+  if(t<e.start){let d=dd(t,e.start);return{k:d<=7?'soon':'up',label:d===1?'غدًا':d<=7?'قريبًا':'قادم',cls:d<=7?'b-warn':'b-idle',days:d}}
+  if(t<=e.end)return{k:'now',label:'جارٍ الآن',cls:'b-bad',days:0};
+  return{k:'past',label:'انقضى',cls:'b-idle',days:-1}}
+function sessionsUntil(date,s){let n=0,d=new Date(localDate()+'T12:00:00'),stop=new Date(date+'T12:00:00');
+  for(;d<stop;d.setDate(d.getDate()+1)){if(holidayOn(dateISO(d)))continue;(timetable[days[(d.getDay()+6)%7]]||[]).forEach(x=>{if(x[2]===s)n++})}return n}
+
+function evItem(e){let k=K(e),s=evState(e);
+  return `<button class="evi ${s.k}" onclick="showEvent(${A(e.id)})"><span class="evic" style="background:${k.bg};color:${k.c}">${k.ic}</span><div class="grow"><b>${esc(e.title)}</b><div class="small">📅 ${esc(evRange(e))}</div></div><div class="evr"><span class="badge ${s.cls}">${s.label}</span>${s.days>0?`<small>بعد ${s.days} يوم</small>`:''}</div></button>`}
+function evGroup(c,list){let all=officialEvents.filter(e=>e.cycle===c),dn=all.filter(e=>e.done).length,l=list.filter(e=>e.cycle===c);if(!l.length)return'';
+  return `<div class="card"><div class="row sb"><b>${c==='شخصي'?'⭐ مواعيدي':'الدورة '+c}</b><span class="badge b-idle">${dn}/${all.length} منجز</span></div><div class="bar" style="margin:10px 0 2px"><div class="fill" style="width:${all.length?Math.round(dn/all.length*100):0}%"></div></div>${l.map(evItem).join('')}</div>`}
+function officialEventsPanel(){let f=ui.evf||'all',t=localDate(),n=nextEvent(),s=n&&evState(n),
+  list=sortedEvents().filter(e=>f==='all'||(f==='soon'?!e.done&&e.end>=t:f==='done'?e.done:e.cycle==={c1:'الأول',c2:'الثاني',mine:'شخصي'}[f]));
+  let hero=n?`<div class="hero" style="background:linear-gradient(135deg,#7c2d12,#c2410c)"><span class="pill">⏰ الاستحقاق القادم</span><div style="display:flex;align-items:baseline;gap:8px"><h2>${s.days>0?s.days:(s.k==='now'?'الآن':'—')}</h2><span>${s.days>0?'يومًا':''}</span></div><div class="nx">${K(n).ic} ${esc(n.title)}<br>📅 ${esc(evRange(n))}</div><button class="btn light block" onclick="showEvent(${A(n.id)})">التفاصيل والجاهزية</button></div>`:'';
+  let body=['الأول','الثاني','شخصي'].map(c=>evGroup(c,list)).join('')||`<div class="card empty"><div class="big">🗓️</div>لا توجد استحقاقات ضمن هذا الفلتر</div>`;
+  return `<div class="sec-title"><h3>🏫 الاستحقاقات الرسمية 2026/2027</h3><button class="btn sm" onclick="editEvent(null)">＋ إضافة</button></div>${hero}
+  <div class="chips">${[['all','الكل'],['soon','القادمة'],['c1','الدورة 1'],['c2','الدورة 2'],['mine','مواعيدي'],['done','المنجزة']].map(([k,l])=>`<button class="chip ${f===k?'on':''}" onclick="ui.evf='${k}';render()">${l}</button>`).join('')}</div>
+  ${body}<button class="btn block" onclick="downloadICS()">📅 تصدير الكل إلى تقويم الهاتف (.ics) مع تذكير قبل يوم</button><div class="small" style="margin:10px 4px 14px">التواريخ منقولة من الوثيقة المرفقة؛ طابقها مع النسخة الرسمية ثم عدّلها بزر ✎ عند الحاجة.</div>`}
+function officialHomeCard(){let n=nextEvent();if(!n)return'';let t=localDate(),more=sortedEvents().filter(e=>!e.done&&e.end>=t&&e.id!==n.id).slice(0,2);
+  return `<div class="card"><div class="row sb"><h3>🏫 الاستحقاقات القادمة</h3><button class="btn sm" onclick="go('season')">الكل</button></div>${[n,...more].map(evItem).join('')}</div>`}
+
+function cycleOf(lv,t){let m=(curMeta[lv]||{})[t];if(!m)return'';let n=+((String(m.periode).match(/\d+/)||[0])[0]);return n?(n<=cycleSplit()?'الأول':'الثاني'):''}
+function cycleSplit(){return Math.min(4,Math.max(1,+localStorage.getItem(KEYS.cycleSplit)||2))}
+function saveCycleSplit(v){localStorage.setItem(KEYS.cycleSplit,v);render();toast('تم حفظ تقسيم الدورتين ✓')}
+function readiness(e){if(e.start<=localDate()||!['test','exam'].includes(e.kind))return'';
+  let rows=orderedSections().map(s=>{let lv=levelOf(s),st=stats(s),left=sessionsUntil(e.start,s),tp=(curriculum[lv]||[]).filter(t=>cycleOf(lv,t)===e.cycle),dn=completedTopics(s),rem=tp.filter(t=>!dn.has(t)).length;
+    if(tp.length){let ok=left>=rem;return `<div class="hist row sb"><div><b>القسم ${esc(s)}</b><div class="small">${rem} درسًا متبقيًا من الدورة ${esc(e.cycle)} · ${left} حصة مبرمجة</div></div><span class="badge ${ok?'b-ok':'b-warn'}">${ok?'الوتيرة كافية':'تحتاج تسريعًا'}</span></div>`}
+    return `<div class="hist row sb"><div><b>القسم ${esc(s)}</b><div class="small">${st.total?`منجز ${st.done}/${st.total} درسًا`:'لا برنامج بعد'}</div></div><span class="badge b-idle">${left} حصة قبل الموعد</span></div>`}).join('');
+  return rows?`<div class="sec-title" style="margin:14px 0 4px"><h3>🎯 الجاهزية قبل الموعد</h3></div>${rows}<div class="small" style="margin-top:6px">التقدير يفترض درسًا لكل حصة، ويحتسب الحصص من استعمال الزمن دون أيام العطل المسجلة. تُنسب الدروس إلى الدورتين حسب Période (الإعدادات).</div>`:''}
+function officialBanner(){let n=nextEvent();if(!n)return'';let s=evState(n);if(s.k!=='now'&&!(s.days>0&&s.days<=3))return'';let k=K(n);return `<button class="evi ${s.k==='now'?'now':'soon'}" style="margin:0 0 14px;background:var(--warnbg);box-shadow:var(--shadow)" onclick="showEvent(${A(n.id)})"><span class="evic" style="background:${k.bg};color:${k.c}">${k.ic}</span><div class="grow"><b>⏰ ${s.k==='now'?'جارٍ الآن':s.days===1?'غدًا':'بعد '+s.days+' أيام'}: ${esc(n.title)}</b></div></button>`}
+function undatedHolidays(){let u=holidays.filter(h=>!h.start);if(!u.length)return'';return `<div class="card" style="background:var(--warnbg)"><b style="color:var(--warn)">⚠️ ${u.length} مناسبات بلا تاريخ ميلادي</b><div class="small" style="margin:4px 0 8px">لا تدخل في حساب الحصص المتأثرة حتى تحدد تواريخها بعد الإعلان الرسمي.</div><div class="chips">${u.map(h=>`<button class="chip on" onclick="editHoliday(${A(h.id)})">${esc(h.name)} ✎</button>`).join('')}</div></div>`}
+function showEvent(id){let e=officialEvents.find(x=>x.id===id);if(!e)return;let k=K(e),s=evState(e);
+  openSheet(`<div class="row"><span class="evic" style="background:${k.bg};color:${k.c}">${k.ic}</span><div class="grow"><span class="badge ${s.cls}">${s.label}</span><h3 style="margin-top:4px">${esc(e.title)}</h3></div></div>
+  <div class="stats" style="grid-template-columns:repeat(3,1fr);margin:12px 0"><div class="stat"><b>${s.days>0?s.days:s.k==='now'?'اليوم':'—'}</b><span>${s.days>0?'يوم متبقٍّ':'العدّ التنازلي'}</span></div><div class="stat"><b>${dd(e.start,e.end)+1}</b><span>أيام</span></div><div class="stat"><b style="font-size:17px">${esc(e.cycle)}</b><span>الدورة</span></div></div>
+  <div class="small">📅 ${esc(evRange(e))} · ${k.t}${e.note?'<br>📝 '+esc(e.note):''}</div>${readiness(e)}
+  <div class="actions"><button class="btn" onclick="toggleEvDone(${A(id)})">${e.done?'↩︎ إلغاء الإنجاز':'✓ تعليم كمنجز'}</button><button class="btn" onclick="downloadICS([${A(id)}])">📅 للتقويم</button></div>
+  <div class="actions"><button class="btn danger" onclick="deleteEvent(${A(id)})">🗑 حذف</button><button class="btn primary" onclick="editEvent(${A(id)})">✎ تعديل</button></div>`)}
+function toggleEvDone(id){let e=officialEvents.find(x=>x.id===id);if(!e)return;e.done=!e.done;persist();closeSheet();render();toast(e.done?'✓ عُلّم كمنجز':'أُلغي الإنجاز')}
+function editEvent(id){let e=officialEvents.find(x=>x.id===id)||{id:'e'+Date.now(),cycle:'الأول',kind:'test',start:localDate(),end:localDate(),title:'',note:''};
+  openSheet(`<h3>${id?'✏️ تعديل الاستحقاق':'＋ استحقاق جديد'}</h3><label>العنوان<input id="efT" value="${esc(e.title)}"></label>
+  <div class="two"><label>الدورة<select id="efC">${['الأول','الثاني','شخصي'].map(c=>`<option ${e.cycle===c?'selected':''}>${c}</option>`).join('')}</select></label><label>النوع<select id="efK">${Object.entries(EVT).map(([k,v])=>`<option value="${k}" ${e.kind===k?'selected':''}>${v.ic} ${v.t}</option>`).join('')}</select></label></div>
+  <div class="two"><label>من<input id="efS" type="date" value="${esc(e.start)}"></label><label>إلى<input id="efE" type="date" value="${esc(e.end)}"></label></div>
+  <label>ملاحظة<textarea id="efN" rows="2">${esc(e.note)}</textarea></label>
+  <div class="actions"><button class="btn" onclick="closeSheet()">إلغاء</button><button class="btn primary" onclick="saveEvent(${A(e.id)})">حفظ ✓</button></div>`)}
+function saveEvent(id){let title=$('efT').value.trim(),start=$('efS').value,end=$('efE').value||$('efS').value;if(!title)return toast('اكتب عنوان الاستحقاق');if(!start)return toast('حدد تاريخ البداية');if(end<start)return toast('تاريخ النهاية قبل البداية');
+  let old=officialEvents.find(x=>x.id===id),e={id,title,start,end,cycle:$('efC').value,kind:$('efK').value,note:$('efN').value.trim(),done:old?!!old.done:false};
+  old?officialEvents[officialEvents.indexOf(old)]=e:officialEvents.push(e);persist();closeSheet();render();toast('تم حفظ الاستحقاق ✓')}
+function deleteEvent(id){let i=officialEvents.findIndex(x=>x.id===id);if(i<0||!confirm('حذف هذا الاستحقاق؟'))return;let r=officialEvents.splice(i,1)[0];persist();closeSheet();render();toast('تم الحذف',()=>{officialEvents.splice(i,0,r);persist();render()})}
+function downloadICS(ids){let ev=ids?officialEvents.filter(e=>ids.includes(e.id)):sortedEvents(),p=s=>s.replace(/-/g,''),nx=s=>{let d=new Date(s+'T12:00:00');d.setDate(d.getDate()+1);return p(dateISO(d))},cl=s=>String(s).replace(/[,;\r\n]/g,' '),stamp=new Date().toISOString().replace(/[-:]|\.\d+/g,''),L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Tatabou3 Doros//AR','CALSCALE:GREGORIAN'];
+  ev.forEach(e=>L.push('BEGIN:VEVENT','UID:'+e.id+'@tatabou3','DTSTAMP:'+stamp,'DTSTART;VALUE=DATE:'+p(e.start),'DTEND;VALUE=DATE:'+nx(e.end),'SUMMARY:'+cl(e.title),'DESCRIPTION:'+cl(e.note||'استحقاق رسمي 2026/2027'),'BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:'+cl(e.title),'END:VALARM','END:VEVENT'));
+  L.push('END:VCALENDAR');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([L.join('\r\n')],{type:'text/calendar;charset=utf-8'}));a.download=ids?'istihqaq-'+ids[0]+'.ics':'istihqaqat-2026-2027.ics';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);toast('تم تجهيز ملف التقويم 📅')}
+
+/* ============ الموسم الدراسي والعطل ============ */
+function holidayDays(h){if(!h.start||!h.end)return null;let a=new Date(h.start+"T12:00:00"),b=new Date(h.end+"T12:00:00");return Math.max(0,Math.round((b-a)/86400000)+1)}
+function holidaySlots(h){if(!h.start||!h.end)return [];let out=[],d=new Date(h.start+"T12:00:00"),end=new Date(h.end+"T12:00:00");while(d<=end){let name=days[(d.getDay()+6)%7];(timetable[name]||[]).forEach(sl=>out.push({date:dateISO(d),day:name,slot:sl}));d.setDate(d.getDate()+1)}return out}
+function excludedFromAffectedCount(h){return h.type==="عطلة بينية"||/الفترة البينية|منتصف السنة الدراسية/.test(String(h.name||""))}
+function affectedHolidaySlots(h){return excludedFromAffectedCount(h)?[]:holidaySlots(h)}
+function nextHoliday(){let today=localDate();return holidays.filter(h=>h.start&&h.end&&h.end>=today).sort((a,b)=>a.start.localeCompare(b.start))[0]||null}
+function fmtRange(h){if(!h.start||!h.end)return h.note||"لم يُحدد التاريخ الميلادي بعد";return h.start===h.end?fmtDate(h.start):fmtDate(h.start)+" — "+fmtDate(h.end)}
+function holidayCard(h){let n=holidayDays(h),slots=affectedHolidaySlots(h),sectionsHit=[...new Set(slots.map(x=>x.slot[2]).filter(isSection))];return `<div class="card"><div class="row sb" style="align-items:flex-start"><div class="grow"><div class="row" style="gap:7px;flex-wrap:wrap"><span class="badge ${h.type==='عطلة بينية'?'b-warn':h.type==='عيد ديني'?'b-idle':'b-ok'}">${esc(h.type)}</span></div><h3 style="margin-top:7px">${esc(h.name)}</h3><div class="small" style="margin-top:3px">📅 ${esc(fmtRange(h))}</div></div><button class="btn sm" onclick="editHoliday(${A(h.id)})">✎ تعديل</button></div><div class="stats" style="grid-template-columns:repeat(3,1fr);margin:12px 0 0"><div class="stat"><b>${n===null?'—':n}</b><span>أيام العطلة</span></div><div class="stat"><b>${slots.length}</b><span>حصص معتمدة</span></div><div class="stat"><b>${sectionsHit.length}</b><span>أقسام متأثرة</span></div></div>${h.note?`<div class="small" style="margin-top:9px">${esc(h.note)}</div>`:''}<details style="margin-top:10px"><summary class="small" style="cursor:pointer;font-weight:700">عرض الحصص المتأثرة</summary><div style="margin-top:8px">${slots.length?slots.map(x=>`<div class="hist"><div class="row sb"><b>${esc(x.day)} · ${esc(x.slot[2])}</b><span class="small">${esc(x.slot[0])}–${esc(x.slot[1])}</span></div><div class="small">${fmtDate(x.date)}</div></div>`).join(''):'<div class="small">لا توجد حصص معتمدة خلال هذه العطلة.</div>'}</div></details><div class="actions"><button class="btn danger" onclick="deleteHoliday(${A(h.id)})">حذف العطلة</button></div></div>`}
+function viewSeason(){let next=nextHoliday(),today=localDate(),sorted=holidays.slice().sort((a,b)=>{if(!a.start)return 1;if(!b.start)return -1;return a.start.localeCompare(b.start)}),upcoming=next&&next.start>=today?Math.max(0,Math.ceil((new Date(next.start+'T12:00:00')-new Date(today+'T12:00:00'))/86400000)):0;let known=holidays.filter(h=>h.start&&h.end),totalDays=known.reduce((a,h)=>a+(holidayDays(h)||0),0),planned=known.reduce((a,h)=>a+affectedHolidaySlots(h).length,0);let month=ui.holidayMonth||today.slice(0,7);return `<div class="row sb" style="margin-bottom:12px"><div><h3 style="font-size:20px;font-weight:800">🎓 الموسم الدراسي</h3><div class="small">2026–2027 · العطل والتخطيط الدراسي</div></div><button class="btn primary sm" onclick="editHoliday(null)">＋ عطلة</button></div>
+<div class="hero"><span class="pill">📅 لوحة الموسم الدراسي</span><h2 style="font-size:26px">${next?esc(next.name):'لا توجد عطلة قادمة'}</h2><div class="tm">${next?esc(fmtRange(next)):'يمكنك إضافة عطلة جديدة أو تعديل التواريخ'}</div><div class="nx">${next&&next.start?`⏳ ${next.start<=today&&next.end>=today?(next.start===today?'العطلة تبدأ اليوم':`العطلة جارية · تنتهي ${fmtDate(next.end)}`):(upcoming===0?'العطلة تبدأ اليوم':`متبقي ${upcoming} يومًا`)} · ${affectedHolidaySlots(next).length} حصة معتمدة خلال العطلة`:'أكمل التواريخ الميلادية للعطل الدينية بعد الإعلان الرسمي.'}</div></div>
+<div class="stats"><div class="stat"><b>${known.length}</b><span>عطل مؤرخة</span></div><div class="stat"><b>${totalDays}</b><span>يوم عطلة مؤرخ</span></div><div class="stat"><b>${planned}</b><span>حصة متأثرة</span></div><div class="stat"><b>${expectedPct()}%</b><span>تقدم الموسم زمنيًا</span></div></div>
+${undatedHolidays()}${officialEventsPanel()}
+<div class="card"><div class="row sb"><h3>🗓️ تقويم الشهر</h3><input type="month" value="${esc(month)}" style="width:auto;margin:0" onchange="ui.holidayMonth=this.value;render()"></div><div class="small" style="margin-top:5px">الأيام الملونة تشير إلى عطلة مسجلة. اضغط على يوم لعرض العطلة.</div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:12px">${['إث','ثلا','أرب','خمي','جمع','سبت','أحد'].map(x=>`<div class="small" style="text-align:center;font-weight:800">${x}</div>`).join('')}${calendarCells(month)}</div><div class="row" style="gap:12px;margin-top:12px;flex-wrap:wrap"><span class="small">🟢 عطلة مسجلة</span><span class="small">🔵 اليوم</span><span class="small">🔴 استحقاق رسمي</span></div></div>
+<div class="sec-title"><h3>🧭 خطة ما قبل العطلة</h3></div><div class="card"><p class="small">ملخص الحصص التي يتضمنها استعمال الزمن خلال العطلة القادمة، لمساعدتك على توقع أثرها في التخطيط. لا تُحذف الحصص من الجدول ولا تُسجل كحصص منجزة.</p>${next&&next.start?holidayPlan(next):'<div class="alert warn">لا يمكن حساب الخطة حتى تُحدد تواريخ العطلة القادمة.</div>'}</div>
+<div class="sec-title"><h3>📚 لائحة العطل والمناسبات</h3><span class="small">${holidays.length} مناسبة</span></div>${sorted.map(holidayCard).join('')}
+<div class="alert warn">ملاحظة: لا تُعتمد الحصص المبرمجة خلال الفترات البينية وعطلة منتصف السنة الدراسية في الإحصاءات أو خطة العطلة أو ملف التصدير؛ وتبقى محفوظة في استعمال الزمن فقط. تنبيه: التواريخ الأولية نُقلت من الصورة المرفقة كما هي، ولم يتم التحقق منها رسميًا. تواريخ الأعياد الدينية تُركت دون تاريخ ميلادي إلى حين التأكيد، ويمكنك تعديل جميع البيانات.</div>`}
+function calendarCells(month){let [yy,mm]=month.split('-').map(Number),first=new Date(yy,mm-1,1),daysN=new Date(yy,mm,0).getDate(),offset=(first.getDay()+6)%7,html='';for(let i=0;i<offset;i++)html+='<span></span>';for(let day=1;day<=daysN;day++){let d=new Date(yy,mm-1,day),iso=dateISO(d),h=holidays.find(x=>x.start&&x.end&&x.start<=iso&&iso<=x.end),ev=officialEvents.find(x=>x.start<=iso&&iso<=x.end),today=iso===localDate(),act=h?`showHoliday(${A(h.id)})`:ev?`showEvent(${A(ev.id)})`:`toast('${iso}')`;html+=`<button class="day ${h?'on':''} ${today?'today':''}" style="min-width:0;width:100%;padding:8px 0;position:relative;${h?'background:var(--okbg);color:var(--ok);':''}" title="${esc(h?h.name:ev?ev.title:iso)}" onclick="${act}">${day}${h?'<i>●</i>':''}${ev?'<span class="evdot"></span>':''}</button>`}return html}
+function holidayPlan(h){let slots=affectedHolidaySlots(h),by={};if(excludedFromAffectedCount(h))return `<div class="alert warn">هذه العطلة مستثناة من احتساب الحصص المبرمجة؛ لن تُعتمد أي حصة خلالها في الخطة أو الإحصاءات.</div>`;slots.forEach(x=>{let s=x.slot[2];if(isSection(s))by[s]=(by[s]||0)+1});let rows=orderedSections().map(s=>`<div class="hist row sb"><div><b>القسم ${esc(s)}</b><div class="small">${stats(s).next?'الدرس القادم: '+esc(tinfo(levelOf(s),stats(s).next).title):'لا يوجد درس مقترح'}</div></div><span class="badge ${by[s]?'b-warn':'b-ok'}">${by[s]||0} حصة</span></div>`).join('');return `<div class="row sb" style="margin-top:12px"><b>${esc(h.name)}</b><span class="badge b-warn">${slots.length} حصة مبرمجة</span></div>${rows||'<div class="small">أضف الأقسام إلى استعمال الزمن لتظهر الخطة.</div>'}<div class="small" style="margin-top:8px">هذا تقرير تخطيطي فقط؛ لا يتم نقل الدروس أو تغيير استعمال الزمن تلقائيًا.</div><button class="btn primary block" style="margin-top:12px" onclick="exportHolidayPlan(${A(h.id)})">⬇️ تصدير خطة العطلة CSV</button>`}
+function exportHolidayPlan(id){let h=holidays.find(x=>x.id===id);if(!h)return;let rows=[['العطلة',h.name],['التاريخ',fmtRange(h)],[],['التاريخ','اليوم','القسم/النشاط','من','إلى']];affectedHolidaySlots(h).forEach(x=>rows.push([x.date,x.day,x.slot[2],x.slot[0],x.slot[1]]));let csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n'),blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='plan-vacances-'+h.id+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);toast('تم تصدير خطة العطلة')}
+function showHoliday(id){let h=holidays.find(x=>x.id===id);if(h)openSheet(`<h3>${esc(h.name)}</h3><div class="small">${esc(fmtRange(h))}</div><div class="actions"><button class="btn" onclick="closeSheet()">إغلاق</button><button class="btn primary" onclick="closeSheet();editHoliday(${A(id)})">تعديل</button></div>`)}
+function editHoliday(id){let h=holidays.find(x=>x.id===id)||{id:'h'+Date.now(),name:'',type:'عطلة بينية',start:'',end:'',note:''};openSheet(`<h3>${id?'✏️ تعديل العطلة':'＋ إضافة عطلة'}</h3><label>اسم العطلة<input id="hfName" value="${esc(h.name)}" placeholder="اسم العطلة أو المناسبة"></label><label>الفئة<select id="hfType">${['عطلة بينية','عيد وطني','مناسبة وطنية','عيد ديني','عطلة استثنائية'].map(t=>`<option ${h.type===t?'selected':''}>${t}</option>`).join('')}</select></label><div class="two"><label>تاريخ البداية<input id="hfStart" type="date" value="${esc(h.start)}"></label><label>تاريخ النهاية<input id="hfEnd" type="date" value="${esc(h.end)}"></label></div><label>ملاحظات / التاريخ الهجري<textarea id="hfNote" rows="2">${esc(h.note)}</textarea></label><div class="alert warn">التواريخ تُستخدم لاستبعاد الأيام من تقدير وتيرة الموسم وحساب الحصص المتأثرة. اتركها فارغة إذا لم يُعلن التاريخ الميلادي بعد.</div><div class="actions"><button class="btn" onclick="closeSheet()">إلغاء</button><button class="btn primary" onclick="saveHoliday(${A(h.id)})">حفظ ✓</button></div>`)}
+function saveHoliday(id){let name=$('hfName').value.trim(),start=$('hfStart').value,end=$('hfEnd').value;if(!name)return toast('اكتب اسم العطلة');if((start&&!end)||(!start&&end))return toast('أدخل تاريخ البداية والنهاية معًا');if(start&&end&&end<start)return toast('تاريخ النهاية يجب أن يكون بعد البداية');let h={id,name,type:$('hfType').value,start,end,note:$('hfNote').value.trim()},i=holidays.findIndex(x=>x.id===id);if(i>=0)holidays[i]=h;else holidays.push(h);persist();closeSheet();render();toast('تم حفظ العطلة ✓')}
+function deleteHoliday(id){let h=holidays.find(x=>x.id===id);if(!h||!confirm('حذف '+h.name+' من لائحة العطل؟'))return;holidays=holidays.filter(x=>x.id!==id);persist();render();toast('تم حذف العطلة')}
+
+/* ============ الإعدادات والنسخ الاحتياطي ============ */
+function applyTheme(){let m=localStorage.getItem(KEYS.theme)||"auto",dark=m==="dark"||(m==="auto"&&matchMedia("(prefers-color-scheme:dark)").matches);document.documentElement.dataset.theme=dark?"dark":"light";let mt=document.querySelector('meta[name=theme-color]');if(mt)mt.content=dark?"#0d131a":"#183b56"}
+function setTheme(m){localStorage.setItem(KEYS.theme,m);applyTheme();openSettings()}
+matchMedia("(prefers-color-scheme:dark)").addEventListener?.("change",applyTheme);
+function openSettings(){let m=localStorage.getItem(KEYS.theme)||"auto";
+  openSheet(`<h3>⚙️ الإعدادات</h3>
+  <label>المظهر</label><div class="seg" style="margin-top:6px">${[["auto","تلقائي"],["light","فاتح"],["dark","داكن"]].map(([k,t])=>`<button class="${m===k?"on":""}" onclick="setTheme('${k}')">${t}</button>`).join("")}</div>
+  <label>📆 فترة الموسم الدراسي (تقدم الموسم زمنيًا)</label><div class="two"><label>تاريخ البداية<input id="seasonStart" type="date" value="${esc(seasonStartDate())}"></label><label>تاريخ النهاية<input id="seasonEnd" type="date" value="${esc(seasonEndDate())}"></label></div><div class="small">تُستخدم هاتان القيمتان لحساب نسبة تقدم الموسم زمنيًا، مع استبعاد أيام الأحد والعطل المسجلة.</div><button class="btn primary block" style="margin-top:8px" onclick="saveSeasonDates()">حفظ تاريخي الموسم</button>
+  <label>🔀 آخر Période ضمن الدورة الأولى</label><select onchange="saveCycleSplit(this.value)">${[1,2,3,4].map(n=>`<option value="${n}" ${cycleSplit()===n?"selected":""}>Période ${n}</option>`).join("")}</select><div class="small">يُستعمل لنسب الدروس إلى الدورتين في «الجاهزية» الخاصة بالاستحقاقات.</div><label>🎯 الحصة الهدف لكل مستوى</label><div class="two"><label>المستوى الثاني<input id="target2" type="number" min="1" step="1" inputmode="numeric" value="${Number(targetSessions["2"])>0?Number(targetSessions["2"]):''}" placeholder="مثلاً 30"></label><label>المستوى الثالث<input id="target3" type="number" min="1" step="1" inputmode="numeric" value="${Number(targetSessions["3"])>0?Number(targetSessions["3"]):''}" placeholder="مثلاً 30"></label></div><div class="small">تُحسب نسبة التقدم من عدد الحصص المسجلة مقارنة بهذا الهدف، دون اعتبار التواريخ أو العطل.</div><button class="btn primary block" style="margin-top:8px" onclick="saveTargets()">حفظ الحصة الهدف</button>
+  <label>النسخ الاحتياطي</label><div class="small">بياناتك محفوظة على هذا الجهاز، وتتزامن مع السحابة عند تسجيل الدخول (زر ☁️). صدّر نسخة احتياطية من حين لآخر.</div>
+  <div class="actions"><button class="btn primary" onclick="exportData()">⬇️ تصدير</button><label class="btn" style="margin:0;text-align:center;cursor:pointer">⬆️ استيراد<input type="file" accept=".json,application/json" onchange="importData(this.files[0])"></label></div>
+  <div class="actions"><button class="btn danger" onclick="resetAll()">🗑 مسح كل البيانات</button></div>`)}
+function saveSeasonDates(){let a=$("seasonStart").value,b=$("seasonEnd").value;if(!a||!b)return toast("أدخل تاريخ البداية والنهاية");if(b<a)return toast("تاريخ النهاية يجب أن يكون بعد تاريخ البداية");localStorage.setItem(KEYS.seasonStart,a);localStorage.setItem(KEYS.seasonEnd,b);closeSheet();render();toast("تم حفظ فترة الموسم ✓")}
+function openTargets(){openSheet(`<h3>🎯 تحديد الحصة الهدف</h3><p class="small">حدد العدد المستهدف من الحصص لكل مستوى. سيُحسب التقدم حسب الحصص المسجلة فقط، دون احتساب الأيام أو العطل.</p><div class="two"><label>المستوى الثاني<input id="target2" type="number" min="1" step="1" inputmode="numeric" value="${Number(targetSessions["2"])>0?Number(targetSessions["2"]):''}" placeholder="مثلاً 30"></label><label>المستوى الثالث<input id="target3" type="number" min="1" step="1" inputmode="numeric" value="${Number(targetSessions["3"])>0?Number(targetSessions["3"]):''}" placeholder="مثلاً 30"></label></div><div class="actions"><button class="btn" onclick="closeSheet()">إلغاء</button><button class="btn primary" onclick="saveTargets()">حفظ الهدف</button></div>`)}
+function saveTargets(){let a=Math.floor(Number($("target2").value)),b=Math.floor(Number($("target3").value)),ok=x=>Number.isFinite(x)&&x>=1;if(!ok(a)&&!ok(b))return toast("أدخل عدد حصص صحيحًا لمستوى واحد على الأقل");targetSessions={"2":ok(a)?a:(Number(targetSessions["2"])||0),"3":ok(b)?b:(Number(targetSessions["3"])||0)};persist();closeSheet();render();toast("تم حفظ الحصة الهدف ✓")}
+ function exportData(){let blob=new Blob([JSON.stringify({v:12,sections,timetable,curriculum,curMeta,data,holidays,targetSessions,officialEvents,seasonStart:seasonStartDate(),seasonEnd:seasonEndDate()},null,1)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`suivi-dorous-${localDate()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);toast("تم تصدير النسخة الاحتياطية")}
+async function importData(f){if(!f)return;try{let j=JSON.parse(await f.text());if(!j||typeof j!=="object"||!j.data||!j.sections||!j.timetable||!j.curriculum)throw 0;if(!confirm("سيتم استبدال كل البيانات الحالية بمحتوى هذه النسخة. متابعة؟"))return;sections=j.sections;timetable=j.timetable;curriculum=j.curriculum;curMeta=j.curMeta||{"2":{},"3":{}};["2","3"].forEach(k=>{if(!curMeta[k])curMeta[k]={}});data=j.data;holidays=Array.isArray(j.holidays)?j.holidays:defaultHolidays.map(h=>({...h}));targetSessions=j.targetSessions||{"2":0,"3":0};if(Array.isArray(j.officialEvents))officialEvents=j.officialEvents;if(j.seasonStart)localStorage.setItem(KEYS.seasonStart,j.seasonStart);if(j.seasonEnd)localStorage.setItem(KEYS.seasonEnd,j.seasonEnd);["2","3"].forEach(k=>{if(!curriculum[k])curriculum[k]=[]});Object.keys(timetable).forEach(sortDay);persist();closeSheet();ui.detail=null;render(true);toast("تم استيراد النسخة ✓")}catch(e){toast("ملف غير صالح")}}
+function resetAll(){if(!confirm("مسح كل الحصص والبرنامج واستعمال الزمن؟ لا يمكن التراجع."))return;if(!confirm("تأكيد أخير: سيعود التطبيق إلى الإعدادات الأولية."))return;[KEYS.data,KEYS.tt,KEYS.cur,KEYS.sec,KEYS.meta,KEYS.holidays,KEYS.targets,KEYS.events].forEach(k=>localStorage.removeItem(k));localStorage.removeItem("trackerCloudTs");(window.cWipe?cWipe():Promise.resolve()).finally(()=>location.reload())}
+
+applyTheme();render(true);
+/* ===== تفاعلات إضافية ===== */
+(function(){
+  const top=document.querySelector(".top"),st=document.getElementById("scrollTop");
+  let tk=false;
+  addEventListener("scroll",()=>{if(tk)return;tk=true;requestAnimationFrame(()=>{let y=scrollY;top.classList.toggle("compact",y>40);st.classList.toggle("show",y>500);tk=false})},{passive:true});
+  /* سحب الورقة السفلية للأسفل لإغلاقها (للهاتف واللوحي) */
+  const sh=document.getElementById("sheet"),sb=document.getElementById("sheetBody");
+  let y0=null,dy=0;
+  sb.addEventListener("touchstart",e=>{if(innerWidth>=1000)return;if(sb.scrollTop>0&&!e.target.closest(".grab"))return;y0=e.touches[0].clientY;dy=0},{passive:true});
+  sb.addEventListener("touchmove",e=>{if(y0===null)return;dy=e.touches[0].clientY-y0;if(dy>0){sb.classList.add("dragging");sb.style.transform=`translateY(${dy}px)`}},{passive:true});
+  sb.addEventListener("touchend",()=>{if(y0===null)return;sb.classList.remove("dragging");sb.style.transform="";if(dy>110)closeSheet();y0=null;dy=0});
+  /* اختصارات لوحة المفاتيح على الحاسوب: 1-5 للتنقل، N لتسجيل حصة */
+  addEventListener("keydown",e=>{
+    if(e.ctrlKey||e.metaKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)||sh.classList.contains("open"))return;
+    const m={"1":"home","2":"sections","3":"week","4":"curriculum","5":"season"};
+    if(m[e.key])go(m[e.key]);else if(e.key==="n"||e.key==="N")openLesson(defaultSection());
+  });
+})();
+
+
+/* ============ المزامنة مع Firebase ============ */
+const FIREBASE_CONFIG={
+  apiKey:"AIzaSyC-J0pr_rQefflyA0QBWn82uVBTIeRNBkA",
+  authDomain:"ostad-cloud-76398.firebaseapp.com",
+  projectId:"ostad-cloud-76398",
+  storageBucket:"ostad-cloud-76398.firebasestorage.app",
+  messagingSenderId:"144542209487",
+  appId:"1:144542209487:web:b4305880e467af7eb4aeba"
+};
+const C_DOC="lessons",C_TS="trackerCloudTs";
+const _persist=persist;
+let cAuth=null,cDb=null,cUser=null,cReady=false,cApplying=false,cTimer=null;
+function cRef(){return cDb.collection("users").doc(cUser.uid).collection("appData").doc(C_DOC)}
+function cBtn(t,title){const b=document.getElementById("cloudBtn");if(b){b.textContent=t;b.title=title||""}}
+function cTouch(){if(cApplying)return;try{localStorage.setItem(C_TS,String(Date.now()))}catch(e){}if(cUser&&cReady){clearTimeout(cTimer);cTimer=setTimeout(cPush,900)}}
+persist=function(){_persist();cTouch()};
+async function cPush(){if(!cUser||!cDb)return;try{let ts=+localStorage.getItem(C_TS)||0;if(!ts){ts=Date.now();localStorage.setItem(C_TS,String(ts))}
+  await cRef().set({json:JSON.stringify({sections,timetable,curriculum,curMeta,data,holidays,targetSessions,officialEvents}),ts,v:9,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  cBtn("✅","تم الحفظ سحابياً");toast("☁️ تم الحفظ سحابياً")}catch(e){console.error(e);cBtn("⚠️","تعذر الحفظ");toast("⚠ تعذر الحفظ السحابي")}}
+function cApply(o,ts){cApplying=true;try{if(o.sections)sections=o.sections;if(o.timetable)timetable=o.timetable;if(o.curriculum)curriculum=o.curriculum;if(o.curMeta)curMeta=o.curMeta;if(o.data)data=o.data;if(Array.isArray(o.holidays))holidays=o.holidays;if(o.targetSessions)targetSessions=o.targetSessions;if(Array.isArray(o.officialEvents))officialEvents=o.officialEvents;
+  ["2","3"].forEach(k=>{if(!curriculum[k])curriculum[k]=[];if(!curMeta[k])curMeta[k]={}});_persist();localStorage.setItem(C_TS,String(ts||Date.now()))}finally{cApplying=false}render()}
+async function cWipe(){if(cUser&&cDb){try{await cRef().delete()}catch(e){console.error(e)}}}
+function initCloud(){
+  if(!/^https?:$/.test(location.protocol)){cBtn("☁️","يتطلب فتح التطبيق من رابط http/https");return}
+  try{firebase.initializeApp(FIREBASE_CONFIG);cAuth=firebase.auth();cDb=firebase.firestore()}catch(e){console.error(e);return}
+  cAuth.onAuthStateChanged(async u=>{cUser=u||null;cReady=false;
+    if(!u){cBtn("☁️","غير متصل");return}
+    cBtn("⏳","جاري المزامنة…");
+    try{const snap=await cRef().get(),lts=+localStorage.getItem(C_TS)||0;
+      if(snap.exists){const c=snap.data(),cts=c.ts||0;
+        if(cts>lts){
+          if(lts===0&&Object.keys(data).length>0&&!confirm("توجد بيانات على هذا الجهاز وأخرى في السحابة.\nموافق = استعمال بيانات السحابة\nإلغاء = الاحتفاظ ببيانات هذا الجهاز ورفعها للسحابة")){localStorage.setItem(C_TS,String(Date.now()));cReady=true;await cPush();return}
+          cApply(JSON.parse(c.json),cts);toast("☁️ تم استرجاع بيانات السحابة")
+        }else if(cts<lts){cReady=true;await cPush();return}
+      }else{if(!localStorage.getItem(C_TS))localStorage.setItem(C_TS,String(Date.now()));cReady=true;await cPush();return}
+      cReady=true;cBtn("✅",u.email||"متصل")
+    }catch(e){console.error(e);cBtn("⚠️","خطأ في قاعدة البيانات");toast("⚠ خطأ في قاعدة البيانات")}
+  })}
+async function cSignIn(){try{await cAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());closeSheet()}catch(e){console.error(e);alert("تعذر الربط: "+(e.message||e)+"\nتأكد من تفعيل Google في Authentication وإضافة نطاقك في Authorized domains.")}}
+function cSignOut(){if(!confirm("تسجيل الخروج؟ ستبقى البيانات على هذا الجهاز."))return;cAuth.signOut();closeSheet()}
+function openCloud(){
+  if(!/^https?:$/.test(location.protocol))return openSheet(`<h3>☁️ السحابة</h3><div class="small">افتح التطبيق من رابط http أو https (مثلاً GitHub Pages) لتفعيل المزامنة.</div>`);
+  if(!cAuth)return toast("Firebase غير متوفر");
+  if(cUser)openSheet(`<h3>☁️ السحابة</h3><div class="small">الحساب المتصل: ${esc(cUser.email||"Google")}</div><div class="actions"><button class="btn primary" onclick="cPush();closeSheet()">🔄 حفظ الآن</button><button class="btn danger" onclick="cSignOut()">تسجيل الخروج</button></div>`);
+  else openSheet(`<h3>☁️ السحابة</h3><div class="small">سجّل الدخول بحساب Google لحفظ بياناتك ومزامنتها بين أجهزتك.</div><div class="actions"><button class="btn primary" onclick="cSignIn()">الدخول بـ Google</button></div>`)}
+initCloud();
+</script>
+</body>
+</html>
