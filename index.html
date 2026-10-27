@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>سجل الأستاذ المطوّر - الفيزياء</title>
+<title> سجل الأستاذ </title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 
 <style>
@@ -155,10 +155,10 @@ body.dark .priority-status{background:#42351f;color:#ffe2a3}body.dark .priority-
 .dash-class-card{appearance:none;text-align:right;width:100%;border:1px solid #e0e9f1;border-radius:19px;background:var(--surface);padding:16px;cursor:pointer;color:var(--ink);box-shadow:0 7px 22px #17324d08;transition:transform .16s,border-color .16s,box-shadow .16s;min-width:0}
 .dash-class-card:hover{transform:translateY(-2px);border-color:#75b9cb;box-shadow:0 12px 26px #17324d12}
 .dash-class-card:focus-visible{outline:3px solid #55abc3;outline-offset:2px}
-.dash-class-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:15px}
+.dash-class-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
 .dash-class-symbol{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(135deg,#e4f4fb,#d8f4ed);color:#176b87;font-size:19px;font-weight:900}
 .dash-class-arrow{font-size:18px;color:var(--muted)}
-.dash-class-name{font-size:17px;font-weight:850;overflow-wrap:anywhere;min-height:28px}
+.dash-class-name{font-size:26px;font-weight:900;line-height:1.25;letter-spacing:.2px;color:var(--brand);overflow-wrap:anywhere;min-height:32px}
 .dash-class-students{font-size:12px;color:var(--muted);margin-top:2px}
 .dash-class-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:15px;padding-top:13px;border-top:1px solid var(--line)}
 .dash-class-metric{background:#f6f9fc;border-radius:12px;padding:9px;min-width:0}
@@ -172,7 +172,7 @@ body.dark .priority-status{background:#42351f;color:#ffe2a3}body.dark .priority-
 body.dark .dash-class-card{border-color:#2c3c50;box-shadow:0 7px 22px #0002}
 body.dark .dash-class-metric{background:#101c2a}
 body.dark .dash-class-symbol{background:linear-gradient(135deg,#1b3a4b,#173b32);color:#aee9f4}
-@media(max-width:700px){.dash-class-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.dash-class-card{padding:12px;border-radius:16px}.dash-class-name{font-size:15px}.dash-class-metrics{gap:6px}.dash-class-metric{padding:8px}.dash-class-metric strong{font-size:19px}}
+@media(max-width:700px){.dash-class-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.dash-class-card{padding:12px;border-radius:16px}.dash-class-name{font-size:21px}.dash-class-metrics{gap:6px}.dash-class-metric{padding:8px}.dash-class-metric strong{font-size:19px}}
 @media(max-width:370px){.dash-class-grid{grid-template-columns:1fr}.dash-class-card{padding:14px}.dash-detail-head{align-items:flex-start;flex-direction:column}}
 
 
@@ -553,7 +553,7 @@ body.dark .sc-seat{border-bottom-color:#3B4C58}
  .split-main{grid-column:1;grid-row:1/span 2;min-width:0}
  #pageAbsence>.card:first-child,#pageHomework>.card:first-child{grid-column:2;grid-row:1;margin-top:0}
  #pageAbsence>.card:last-child,#pageHomework>.card:last-child{grid-column:2;grid-row:2;position:sticky;top:20px}
- #pageNotes,#pageImport,#pageHistory{max-width:780px;margin-inline:auto}
+ #pageImport,#pageHistory{max-width:780px;margin-inline:auto}
 }
 @media print{body,body.dark{padding:0!important;background:#fff}body:before{display:none!important}body.printing-seat .sc-stage:before{background:#fff!important;color:#000;border:1px solid #777;box-shadow:none}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -601,12 +601,113 @@ body.dark input,body.dark select,body.dark textarea{border-color:#3F5473}
 @media(max-width:650px){.sc-stage:after{margin-top:12px;padding:8px;font-size:13px}}
 @media print{body.printing-seat .sc-stage:after{background:#fff!important;color:#000;border:1px solid #777;box-shadow:none}}
 </style>
+<style id="v6">
+/* ===== v6: تصميم متجاوب بالكامل + إدارة التلاميذ ===== */
+:root{--fs:clamp(14.5px,12px + .6vw,19px);--gap:clamp(10px,1.2vw + 6px,20px);--nav-h:clamp(56px,6.5vh + 20px,70px);--side-w:clamp(220px,18vw,300px)}
+html{font-size:var(--fs);-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body,body.dark{font-size:1rem;overflow-x:hidden;min-height:100dvh}
+img,svg,video{max-width:100%}
+@media(max-width:999px){main{padding-inline:var(--gap)}}
+header h1{font-size:1.12rem}.sub{font-size:.76rem}
+.mark{width:2.4rem;height:2.4rem;font-size:1.4rem}
+.save-status{font-size:.76rem}.theme-toggle{width:2.4rem;height:2.4rem;font-size:1.1rem}
+label{font-size:.85rem}
+input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem .8rem}
+.btn{font-size:.95rem;min-height:2.75rem;padding:.55rem 1rem}
+.tab{font-size:max(11px,.72rem)}.tab svg{width:1.45rem;height:1.45rem}
+.subtab{font-size:.9rem;min-height:2.6rem}
+.badge{font-size:.85rem}.small,.sc-hint{font-size:.85rem}
+.card{padding:clamp(12px,1.2vw + 8px,22px)}.card>strong{font-size:1.05rem}
+.sc-nm{font-size:clamp(10.5px,.8rem,15px)}
+.sc-st,.tile-state,.student-tile .tile-state{font-size:max(10px,.72rem)}
+.student-tile .tile-name{font-size:clamp(11.5px,.88rem,16px)}
+.sc-seat{min-height:clamp(64px,5vw + 40px,104px)}
+.student-grid{grid-template-columns:repeat(auto-fill,minmax(clamp(76px,20vw,150px),1fr))!important}
+.modal .box{max-height:min(88dvh,720px)}
+@media(min-width:1000px){#pageAbsence.active,#pageHomework.active{grid-template-columns:minmax(0,1fr) clamp(290px,24vw,380px)}}
+@media(min-width:1500px){main{max-width:1320px}}
+@media(min-width:1900px){main{max-width:1560px}}
+@media(max-height:500px) and (max-width:999px){header{position:static}}
+@media(pointer:coarse){.sc-btn,.subtab,.btn,summary{min-height:2.9rem}}
+#pageStudents{max-width:980px;margin-inline:auto}
+.sec-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:.9rem;flex-wrap:wrap}
+.sec-head h2{margin:0;font-size:1.2rem;font-weight:700}.sec-head p{margin:.2rem 0 0;color:var(--muted);font-size:.85rem}
+.mg-top,.mg-add{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
+.mg-list{list-style:none;margin:.7rem 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,clamp(250px,30vw,350px)),1fr));gap:8px}
+.mg-row{display:flex;align-items:center;gap:10px;padding:.5rem .7rem;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.mg-num{min-width:1.9rem;height:1.9rem;border-radius:50%;display:grid;place-items:center;font-size:.78rem;font-weight:700;background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--muted)}
+.mg-name{flex:1;min-width:0;font-weight:600;overflow-wrap:anywhere}
+.mg-act{display:flex;gap:6px}.mg-act .btn{min-height:2.4rem;min-width:2.4rem;padding:.3rem .55rem}
+.mg-undo{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}.mg-undo[hidden]{display:none}
+.mg-list .empty{grid-column:1/-1}
+.card-tools{margin-top:8px}.mini{min-height:2.3rem!important;padding:.3rem .8rem!important;font-size:.85rem!important}
+/* Desktop side rail: collapsed to icons, expands on hover (mouse devices only) */
+@media(min-width:1000px) and (hover:hover){
+ :root{--rail-w:78px}
+ body,body.dark{padding:0 var(--rail-w) 0 0}
+ body:before{width:var(--rail-w);transition:width .2s ease,box-shadow .2s ease}
+ header{width:var(--rail-w);overflow:hidden;align-items:center;padding:28px 0 0;transition:width .2s ease}
+ header .brand>div,header .header-tools{display:none;white-space:nowrap}
+ .tabs{inset:148px 0 0 auto;width:var(--rail-w);overflow:hidden;padding:10px 14px;transition:width .2s ease}
+ .tab{padding:0;justify-content:center;gap:0}
+ .tab span{max-width:0;opacity:0;overflow:hidden;white-space:nowrap;transition:max-width .2s ease,opacity .15s ease}
+ body:has(header:hover) :is(header,.tabs),body:has(.tabs:hover) :is(header,.tabs){width:var(--side-w)}
+ body:has(header:hover):before,body:has(.tabs:hover):before{width:var(--side-w);box-shadow:-12px 0 30px rgba(0,0,0,.28)}
+ body:has(header:hover) header,body:has(.tabs:hover) header{align-items:flex-start;padding:28px 20px 0}
+ body:has(header:hover) header .brand>div,body:has(.tabs:hover) header .brand>div{display:block}
+ body:has(header:hover) .header-tools,body:has(.tabs:hover) .header-tools{display:flex}
+ body:has(header:hover) .tab,body:has(.tabs:hover) .tab{padding:0 14px;justify-content:flex-start;gap:12px}
+ body:has(header:hover) .tab span,body:has(.tabs:hover) .tab span{max-width:200px;opacity:1}
+ #toast{left:calc((100% - var(--rail-w))/2)}
+}
+
+/* ===== v7: مخطط الجلوس كامل ومتجاوب في الغياب والواجبات ===== */
+/* الترتيب: القسم والتاريخ (أعلى) ← المخطط ← الحفظ والإرسال (أسفل) في كل الشاشات */
+@media(min-width:1000px){
+ #pageAbsence.active,#pageHomework.active{display:block}
+ #pageAbsence>.card:first-child,#pageHomework>.card:first-child,
+ #pageAbsence>.card:last-child,#pageHomework>.card:last-child{grid-column:auto;grid-row:auto}
+ #pageAbsence>.card:last-child,#pageHomework>.card:last-child{position:static;display:grid;grid-template-columns:auto 1fr 1fr;gap:10px;align-items:center}
+ #pageAbsence>.card:last-child p,#pageHomework>.card:last-child p{grid-column:1/-1;margin:0}
+ #pageAbsence>.card:last-child .btn,#pageHomework>.card:last-child .btn{margin:0!important;width:auto!important}
+ #pageAbsence>.card:last-child .bar-count,#pageHomework>.card:last-child .bar-count{margin:0}
+}
+@media(max-width:999px){
+ #pageAbsence>.card:last-child,#pageHomework>.card:last-child{position:static;margin-bottom:calc(var(--nav-h) + 14px)}
+}
+#pageAbsence>.card:first-child,#pageHomework>.card:first-child{margin-top:0;margin-bottom:8px}
+#pageAbsence .split-main .card,#pageHomework .split-main .card{margin-top:8px;margin-bottom:8px}
+/* المخطط يملأ العرض بدون تمرير أفقي، والمقاعد تتقلص/تتمدد حسب الشاشة */
+#seatView .sc-stage,#hw_seatView .sc-stage{
+ --ov:clamp(300px,34dvh,380px);
+ container-type:inline-size;overflow:visible;padding:clamp(4px,1.2vw,14px);
+}
+#seatView .sc-grid,#hw_seatView .sc-grid{
+ min-width:0!important;width:100%;
+ gap:clamp(3px,.9cqw,12px);
+ grid-template-columns:repeat(var(--cols),minmax(0,1fr))!important;
+}
+#seatView .sc-seat,#hw_seatView .sc-seat{
+ min-width:0;min-height:0;
+ height:clamp(44px,calc((100dvh - var(--ov)) / var(--rows,5)),112px);
+ padding:clamp(10px,1.6cqw,16px) 2px 3px;
+ border-radius:clamp(6px,1.2cqw,12px);overflow:hidden;
+}
+#seatView .sc-nm,#hw_seatView .sc-nm{
+ font-size:clamp(8.5px,calc(100cqw / var(--cols) / 7.2),16px);
+ line-height:1.2;text-align:center;overflow-wrap:anywhere;word-break:break-word;max-width:100%;
+ display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+#seatView .sc-st,#hw_seatView .sc-st{font-size:clamp(7.5px,calc(100cqw / var(--cols) / 10),12px);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#seatView .sc-n,#hw_seatView .sc-n{font-size:clamp(7px,calc(100cqw / var(--cols) / 11),11px)}
+#seatView .sc-seat.absent:after,#hw_seatView .sc-seat.absent:after{width:clamp(9px,calc(100cqw / var(--cols) / 6),17px);height:clamp(9px,calc(100cqw / var(--cols) / 6),17px);top:2px;background-size:70%}
+#seatView .sc-stage:after,#hw_seatView .sc-stage:after{margin-top:clamp(6px,1.5cqw,16px);padding:clamp(4px,1cqw,10px);font-size:clamp(10px,2.2cqw,14px)}
+</style>
 </head>
 <body>
 <header>
-  <div class="brand"><span class="mark" aria-hidden="true">φ</span><div><h1>سجل الأستاذ</h1><div class="sub">الفيزياء · الغياب والواجبات والتتبع</div></div></div>
+  <div class="brand"><span class="mark" aria-hidden="true">φ</span><div><h1>سجل الأستاذ</h1><div class="sub"> الغياب والواجبات والتتبع</div></div></div>
   <div class="header-tools">
-    <button id="cloudConnectBtn" class="theme-toggle" type="button" onclick="connectFirebaseCloud()" aria-label="ربط التخزين السحابي" title="ربط التخزين السحابي">☁️</button>
     <span id="saveStatus" class="save-status" role="status">✓ الحفظ المحلي مفعّل</span>
     <button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()" aria-label="تغيير المظهر">🌙</button>
   </div>
@@ -633,7 +734,8 @@ body.dark input,body.dark select,body.dark textarea{border-color:#3F5473}
     <button id="subStats" class="subtab" onclick="showPage('stats')">📈 الإحصائيات والتقارير</button>
   </div>
   <div id="subnavSettings" class="subnav" hidden aria-label="إعدادات البيانات">
-    <button id="subImport" class="subtab" onclick="showPage('import')">📥 استيراد وإدارة البيانات</button>
+    <button id="subStudents" class="subtab" onclick="showPage('students')">👥 التلاميذ والأقسام</button>
+    <button id="subImport" class="subtab" onclick="showPage('import')">📥 الاستيراد والنسخ الاحتياطي</button>
   </div>
 
   <div id="pageAbsence" class="page active">
@@ -794,6 +896,20 @@ body.dark input,body.dark select,body.dark textarea{border-color:#3F5473}
     </div>
   </div>
 
+  <div id="pageStudents" class="page">
+ <div class="card">
+  <div class="sec-head"><div><h2>👥 إدارة التلاميذ</h2><p>أضف تلميذاً إلى القسم، أو عدّل اسمه، أو احذفه يدوياً.</p></div><span class="badge" id="mgCount">0 تلميذ</span></div>
+  <div class="mg-top"><div><label for="mgClass">القسم</label><select id="mgClass" onchange="mgClassChanged()"></select></div><button type="button" class="btn gray" onclick="manageClasses()">⚙️ الأقسام</button></div>
+  <label for="mgName">إضافة تلميذ جديد</label>
+  <div class="mg-add"><input id="mgName" placeholder="الاسم الكامل للتلميذ" autocomplete="off" enterkeyhint="done" onkeydown="if(event.key==='Enter'){event.preventDefault();mgAdd()}"><button type="button" class="btn primary" onclick="mgAdd()">➕ إضافة</button></div>
+  <p class="small">لإضافة لائحة كاملة دفعة واحدة استعمل <a href="#" onclick="showPage('import');return false">الاستيراد من ملف أو لصق</a>.</p>
+  <div id="mgUndo" class="alert-item mg-undo" hidden><span id="mgUndoTxt"></span><button type="button" class="btn gray mini" onclick="mgUndo()">↩️ تراجع</button></div>
+  <hr>
+  <input id="mgSearch" type="search" placeholder="🔎 بحث في لائحة القسم" oninput="mgRender()">
+  <ol id="mgList" class="mg-list"></ol>
+ </div>
+</div>
+
   <div id="pageImport" class="page">
   <div class="card">
     <strong>📥 استيراد لائحة التلاميذ</strong>
@@ -813,10 +929,9 @@ body.dark input,body.dark select,body.dark textarea{border-color:#3F5473}
     <button class="btn primary" style="width:100%;margin-top:10px" onclick="importNames()">📂 استيراد التلاميذ</button>
     <p class="small">يمكنك لصق الأسماء من أي مصدر. يُتجاهل الترقيم في بداية السطر (مثل 1. أو 2-) والأسطر الفارغة والأسماء المكررة. يعمل الاستيراد دون اتصال بالإنترنت.</p>
     <hr>
-    <button class="btn primary" style="width:100%" onclick="addStudent()">➕ إضافة تلميذ يدوياً</button>
-    <button class="btn gray" style="width:100%;margin-top:9px" onclick="manageClasses()">⚙️ إضافة/تعديل الأقسام</button>
-    <p class="small">يمكنك تعديل اسم أي تلميذ أو حذفه. البيانات محفوظة على نفس الهاتف.</p>
-    <hr>
+    <button class="btn gray" style="width:100%" onclick="showPage('students')">👥 إضافة أو حذف تلميذ يدوياً / إدارة الأقسام</button>
+  </div>
+  <div class="card">
     <strong>🛡️ النسخ الاحتياطي واسترجاع البيانات</strong>
     <p class="small">احفظ نسخة من الأقسام والتلاميذ والسجل لاستعادتها عند تغيير الهاتف أو حذف بيانات المتصفح.</p>
     <button class="btn green" style="width:100%;margin-top:8px" onclick="exportBackup()">⬇️ إنشاء نسخة احتياطية كاملة</button>
@@ -824,8 +939,8 @@ body.dark input,body.dark select,body.dark textarea{border-color:#3F5473}
     <label>ملف النسخة الاحتياطية (.json)</label>
     <input id="backupFile" type="file" accept=".json,application/json" onchange="verifyBackupFile()">
     <button class="btn gray" style="width:100%;margin-top:8px" onclick="verifyBackupFile()">🔍 التحقق من سلامة النسخة</button>
-    <button class="btn primary" style="width:100%;margin-top:8px" onclick="importBackup()">♻️ استرجاع بعد إنشاء نسخة أمان</button>
-    <p class="small">قبل الاسترجاع أو استبدال البيانات، ينزّل التطبيق نسخة أمان من البيانات الحالية. احتفظ بملفات النسخ الاحتياطية خارج الهاتف أيضاً.</p>
+    <button class="btn primary" style="width:100%;margin-top:8px" onclick="importBackup()">♻️ استرجاع نسخة احتياطية</button>
+    <p class="small">لا تُنشأ أي نسخة احتياطية تلقائياً؛ أنشئ نسخة يدوياً من هنا قبل الاسترجاع أو استبدال البيانات. احتفظ بملفات النسخ الاحتياطية خارج الهاتف أيضاً.</p>
   </div>
   </div>
 
@@ -858,7 +973,6 @@ body.dark input,body.dark select,body.dark textarea{border-color:#3F5473}
         <div><label>القسم</label><select id="noteClass"></select></div>
         <div id="noteStudentWrap"><label>التلميذ</label><select id="noteStudent"></select></div>
       </div>
-      <div id="noteSeatPicker" hidden></div>
       <div class="row">
         <div><label>التاريخ</label><input id="noteDate" type="date"></div>
         <div><label>نوع الملاحظة</label><select id="noteType"></select></div>
@@ -873,8 +987,9 @@ body.dark input,body.dark select,body.dark textarea{border-color:#3F5473}
         </div>
         <div id="noteTypeList" class="nt-list"></div>
       </div>
-      <label>تفاصيل الملاحظة</label><textarea id="noteText" placeholder="اكتب ملاحظة واضحة وموضوعية..."></textarea>
-      <button class="btn primary" style="width:100%;margin-top:10px" onclick="saveNote()">💾 حفظ الملاحظة</button>
+      <label>تفاصيل الملاحظة <span class="small">(اختيارية)</span></label><textarea id="noteText" placeholder="اختياري: أضف تفاصيل إن أردت..."></textarea>
+      <div id="noteSeatPicker" hidden></div>
+      <button class="btn primary" id="noteSaveBtn" style="width:100%;margin-top:10px" onclick="saveNote()">💾 حفظ الملاحظة</button>
     </div>
   </div>
 
@@ -883,7 +998,7 @@ body.dark input,body.dark select,body.dark textarea{border-color:#3F5473}
       <div class="notes-browser-head"><div><strong>📚 الملاحظات المسجلة</strong><p class="small">شبكة منظمة حسب نوع الملاحظة</p></div><span id="notesCount" class="badge">0 ملاحظة</span></div>
       <div class="sc-viewbar" role="tablist" aria-label="طريقة عرض الملاحظات"><button type="button" id="notesViewType" class="subtab active" onclick="setNotesView('type')">🗂️ حسب النوع</button><button type="button" id="notesViewSeat" class="subtab" onclick="setNotesView('seat')">🪑 حسب مخطط الجلوس</button></div>
       <div class="row notes-filters">
-        <div><label for="notesFilterClass">تصفية حسب القسم</label><select id="notesFilterClass" onchange="renderNotes()"><option value="all">جميع الأقسام</option></select></div>
+        <div><label for="notesFilterClass">تصفية حسب القسم</label><select id="notesFilterClass" onchange="notesFilterClassChanged()"><option value="all">جميع الأقسام</option></select></div>
         <div><label for="notesFilterType">تصنيف الملاحظة</label><select id="notesFilterType" onchange="renderNotes()"><option value="all">جميع الأنواع</option></select></div>
       </div>
       <label for="notesSearch">🔎 البحث في الملاحظات</label><input id="notesSearch" type="search" placeholder="اسم التلميذ أو كلمة من الملاحظة..." oninput="renderNotes()">
@@ -978,37 +1093,6 @@ body.dark input,body.dark select,body.dark textarea{border-color:#3F5473}
  </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script>
-/* إعدادات Firebase: استبدل القيم أدناه بإعدادات تطبيق الويب من Firebase Console.
-   هذه القيم ليست كلمة مرور؛ لا تضع هنا أي مفاتيح خاصة أو كلمات مرور. */
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyC-J0pr_rQefflyA0QBWn82uVBTIeRNBkA",
-  authDomain: "ostad-cloud-76398.firebaseapp.com",
-  projectId: "ostad-cloud-76398",
-  storageBucket: "ostad-cloud-76398.firebasestorage.app",
-  messagingSenderId: "144542209487",
-  appId: "1:144542209487:web:b4305880e467af7eb4aeba",
-  measurementId: "G-RYN6KVNGF4"
-};
-let cloudAuth=null, cloudDb=null, cloudUser=null, cloudReady=false, cloudSaveTimer=null, cloudBusy=false;
-const CLOUD_KEYS_PREFIX="absencePhysics";
-function cloudSetStatus(msg){const el=document.getElementById("saveStatus");if(el)el.textContent=msg;}
-function cloudConfigured(){return FIREBASE_CONFIG.apiKey!=="PASTE_API_KEY_HERE" && FIREBASE_CONFIG.projectId!=="PASTE_PROJECT_ID_HERE" && FIREBASE_CONFIG.appId!=="PASTE_APP_ID_HERE";}
-function cloudLocalSnapshot(){const out={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith(CLOUD_KEYS_PREFIX)||k==="v2LastPage")){out[k]=localStorage.getItem(k);}}return out;}
-function cloudSameSnapshot(a,b){const ak=Object.keys(a||{}).sort(),bk=Object.keys(b||{}).sort();return ak.length===bk.length&&ak.every((k,i)=>k===bk[i]&&a[k]===b[k]);}
-function cloudApplySnapshot(obj){const keys=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&(k.startsWith(CLOUD_KEYS_PREFIX)||k==="v2LastPage"))keys.push(k);}keys.forEach(k=>localStorage.removeItem(k));Object.entries(obj||{}).forEach(([k,v])=>{if((k.startsWith(CLOUD_KEYS_PREFIX)||k==="v2LastPage")&&typeof v==="string")localStorage.setItem(k,v);});}
-function cloudScheduleSave(){if(!cloudUser||!cloudReady||cloudBusy)return;clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(cloudSaveNow,900);}
-async function cloudSaveNow(){if(!cloudUser||!cloudReady||cloudBusy)return;try{const ref=cloudDb.collection("users").doc(cloudUser.uid).collection("appData").doc("main");await ref.set({snapshot:cloudLocalSnapshot(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),appVersion:1},{merge:true});cloudSetStatus("☁️ تم الحفظ سحابياً");}catch(e){console.error("Firebase save error",e);cloudSetStatus("⚠ تعذر الحفظ السحابي");}}
-async function connectFirebaseCloud(){if(!cloudConfigured()){alert("خاصنا أولاً نضيف إعدادات تطبيق الويب من Firebase Console داخل الملف. افتح إعدادات المشروع > تطبيقاتك > تطبيق الويب، وانسخ firebaseConfig.");return;}try{if(!cloudAuth){firebase.initializeApp(FIREBASE_CONFIG);cloudAuth=firebase.auth();cloudDb=firebase.firestore();}if(cloudUser){cloudSetStatus("☁️ الحساب مربوط: "+(cloudUser.email||"Google"));return;}const provider=new firebase.auth.GoogleAuthProvider();await cloudAuth.signInWithPopup(provider);}catch(e){console.error(e);cloudSetStatus("⚠ فشل الربط السحابي");alert("تعذر الربط: "+(e.message||e)+"\nتأكد من تفعيل Google في Authentication وإضافة نطاق التشغيل في Authorized domains.");}}
-function initFirebaseCloud(){if(!cloudConfigured()){return;}try{if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);cloudAuth=firebase.auth();cloudDb=firebase.firestore();cloudAuth.onAuthStateChanged(async user=>{cloudUser=user||null;if(!user){cloudReady=false;return;}cloudSetStatus("⏳ جاري تحميل بيانات السحابة…");try{const ref=cloudDb.collection("users").doc(user.uid).collection("appData").doc("main");const snap=await ref.get();if(snap.exists&&snap.data()&&snap.data().snapshot){const cloud= snap.data().snapshot;const local=cloudLocalSnapshot();if(!cloudSameSnapshot(cloud,local)){if(sessionStorage.getItem("firebaseCloudReloaded")==="1"){sessionStorage.removeItem("firebaseCloudReloaded");await ref.set({snapshot:local,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),appVersion:1},{merge:true});}else{cloudBusy=true;cloudApplySnapshot(cloud);cloudBusy=false;cloudReady=true;cloudSetStatus("☁️ تم استرجاع البيانات — جاري تحديث التطبيق");sessionStorage.setItem("firebaseCloudReloaded","1");location.reload();return;}}}else{await ref.set({snapshot:cloudLocalSnapshot(),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),appVersion:1});}cloudReady=true;cloudSetStatus("☁️ متصل — الحفظ السحابي مفعّل");const btn=document.getElementById("cloudConnectBtn");if(btn)btn.title="الحساب المتصل: "+(user.email||"Google");}catch(e){cloudBusy=false;console.error("Firebase load error",e);cloudSetStatus("⚠ خطأ في قاعدة البيانات");}});
-const nativeSet=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){nativeSet.call(this,key,value);if(this===localStorage&&(String(key).startsWith(CLOUD_KEYS_PREFIX)||String(key)==="v2LastPage"))cloudScheduleSave();};
-const nativeRemove=Storage.prototype.removeItem;Storage.prototype.removeItem=function(key){nativeRemove.call(this,key);if(this===localStorage&&(String(key).startsWith(CLOUD_KEYS_PREFIX)||String(key)==="v2LastPage"))cloudScheduleSave();};
-}catch(e){console.error("Firebase init error",e);cloudSetStatus("⚠ تعذر تهيئة Firebase");}}
-window.addEventListener("DOMContentLoaded",()=>{const btn=document.getElementById("cloudConnectBtn");if(btn)btn.addEventListener("click",()=>{if(cloudUser){if(confirm("الحساب مربوط بالفعل. هل تريد تسجيل الخروج من التخزين السحابي؟")){cloudAuth.signOut();cloudReady=false;cloudSetStatus("✓ الحفظ المحلي مفعّل");}}});initFirebaseCloud();});
-</script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 const defaultData={
@@ -1289,7 +1373,7 @@ function renderSeating(k="absence"){
     ?"انقر على تلميذ ثم على مقعد آخر لتبديلهما، أو اسحبه بين المقاعد. تُحفظ التغييرات تلقائياً وتظهر في الغياب والواجبات."
     :(hw?"اضغط على خانة التلميذ ثم أكّد أنه لم ينجز الواجب. اضغط على الخانة الحمراء لإلغاء التحديد."
         :"اضغط على خانة التلميذ ثم أكّد غيابه. اضغط على الخانة الحمراء لإلغاء الغياب.");
-  grid.style.setProperty("--cols",L.cols);
+  grid.style.setProperty("--cols",L.cols);grid.style.setProperty("--rows",L.rows);
   grid.style.gridTemplateColumns=`repeat(${L.cols},minmax(0,1fr))`;
   grid.innerHTML="";
   if(!names.length){
@@ -1423,8 +1507,8 @@ function validateBackupPayload(p){
   return "";
 }
 function createSafetyBackup(reason){
-  try{return downloadPayload(backupPayload(),`نسخة-أمان-قبل-${reason}-${today()}.json`)}
-  catch(e){throw new Error("تعذّر إنشاء نسخة الأمان: "+e.message)}
+  /* النسخ الاحتياطي التلقائي موقوف: لا تُنشأ نسخة إلا يدوياً من خانة «البيانات». */
+  return null;
 }
 function toggleDarkMode(){
   document.body.classList.toggle("dark");
@@ -1472,7 +1556,7 @@ function importNames(){
  const mode=document.getElementById("importMode").value;
  if(!target)return alert("اختر القسم أولاً.");
  if(mode==="replace"){
-   if(!confirm("سيتم استبدال لائحة القسم "+target+" بـ "+names.length+" اسماً. سينزّل التطبيق نسخة أمان أولاً. هل تريد المتابعة؟"))return;
+   if(!confirm("سيتم استبدال لائحة القسم "+target+" بـ "+names.length+" اسماً. هل تريد المتابعة؟"))return;
    try{createSafetyBackup("استبدال-لائحة-تلاميذ")}catch(e){return alert(e.message+" أُلغي الاستبدال حفاظاً على بياناتك.");}
    data.classes[target]=names;
  }
@@ -1507,8 +1591,17 @@ function showPage(page){
   Object.entries(subMap).forEach(([name,label])=>{const b=document.getElementById("sub"+label);if(b)b.classList.toggle("active",page===name);});
   if(page==="history") renderHistory();
   if(page==="stats") renderStats();
-  if(page==="notes") renderNoteRecorder();
-  if(page==="noteslog") renderNotes();
+  if(page==="notes"){
+    refreshTrackingSelects();
+    const nc=document.getElementById("noteClass"),ca=document.getElementById("classAbsence");
+    if(nc&&ca&&data.classes[ca.value]&&nc.value!==ca.value){nc.value=ca.value;noteRecPick=null;noteRecMsg=null;fillStudentSelect("noteClass","noteStudent");}
+    renderNoteRecorder();
+  }
+  if(page==="noteslog"){
+    const cf=document.getElementById("notesFilterClass"),ca2=document.getElementById("classAbsence");
+    if(cf&&ca2&&data.classes[ca2.value]&&[...cf.options].some(o=>o.value===ca2.value))cf.value=ca2.value;
+    renderNotes();
+  }
   if(page==="dashboard") renderDashboard();
   if(page==="seating") renderSeatingAll();
 }
@@ -1530,10 +1623,9 @@ function refreshTrackingSelects(){
   fillStudentSelect("noteClass","noteStudent");
 }
 function saveNote(){
-  if(noteRecView==="seat"&&!noteRecPick)return alert("اختر تلميذاً من مخطط الجلوس أولاً.");
   const c=document.getElementById("noteClass").value, idx=Number(document.getElementById("noteStudent").value);
   const name=(data.classes[c]||[])[idx];const body=document.getElementById("noteText").value.trim();
-  if(!name)return alert("أضف تلاميذ إلى القسم أولاً.");if(!body)return alert("اكتب تفاصيل الملاحظة أولاً.");
+  if(!name)return alert("أضف تلاميذ إلى القسم أولاً.");
   notes.unshift({id:Date.now().toString(36),className:c,student:name,date:document.getElementById("noteDate").value||today(),type:document.getElementById("noteType").value,text:body});
   persistNotes();document.getElementById("noteText").value="";renderNotes();renderNoteRecorder();renderDashboard();alert("تم حفظ الملاحظة.");
 }
@@ -1542,7 +1634,7 @@ try{notesView=localStorage.getItem("absencePhysicsNotesView")==="seat"?"seat":"t
 function setNotesView(v){notesView=v==="seat"?"seat":"type";notesSeatSel=null;try{localStorage.setItem("absencePhysicsNotesView",notesView);}catch(e){}renderNotes();}
 function pickNoteSeat(name){notesSeatSel=(notesSeatSel===name)?null:name;renderNotes();}
 function addNoteFor(name,c){
-  showPage("notes");
+  syncAppClass(c);showPage("notes");
   const cs=document.getElementById("noteClass");if(!cs)return;cs.value=c;fillStudentSelect("noteClass","noteStudent");
   const i=(data.classes[c]||[]).indexOf(name);if(i>-1)document.getElementById("noteStudent").value=String(i);
   noteRecPick=i>-1?name:null;renderNoteRecorder();
@@ -1551,18 +1643,48 @@ function addNoteFor(name,c){
 }
 let noteRecView="list",noteRecPick=null;
 try{noteRecView=localStorage.getItem("absencePhysicsNoteRecView")==="seat"?"seat":"list";}catch(e){}
-function setNoteRecView(v){noteRecView=v==="seat"?"seat":"list";noteRecPick=null;try{localStorage.setItem("absencePhysicsNoteRecView",noteRecView);}catch(e){}renderNoteRecorder();}
+function setNoteRecView(v){noteRecView=v==="seat"?"seat":"list";noteRecPick=null;noteRecMsg=null;try{localStorage.setItem("absencePhysicsNoteRecView",noteRecView);}catch(e){}renderNoteRecorder();}
+let noteRecMsg=null;
 function recPickSeat(name){
-  const c=document.getElementById("noteClass").value,i=(data.classes[c]||[]).indexOf(name);if(i<0)return;
-  noteRecPick=name;document.getElementById("noteStudent").value=String(i);renderNoteRecorder();
+  const c=document.getElementById("noteClass").value,names=data.classes[c]||[];
+  if(!names.includes(name))return;
+  const type=document.getElementById("noteType").value;
+  if(!type)return alert("اختر نوع الملاحظة أولاً.");
+  const ta=document.getElementById("noteText"),body=ta.value.trim();
+  const id=Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  notes.unshift({id,className:c,student:name,date:document.getElementById("noteDate").value||today(),type,text:body});
+  persistNotes();ta.value="";
+  const labels=noteLabelsMap("أخرى");
+  noteRecPick=name;noteRecMsg={id,name,label:labels[type]||labels.other};
+  renderNotes();renderNoteRecorder();renderDashboard();
 }
-function noteClassChanged(){fillStudentSelect("noteClass","noteStudent");noteRecPick=null;renderNoteRecorder();}
+function undoLastNote(){
+  if(!noteRecMsg)return;
+  notes=notes.filter(n=>String(n.id)!==String(noteRecMsg.id));
+  persistNotes();noteRecMsg=null;noteRecPick=null;
+  renderNotes();renderNoteRecorder();renderDashboard();
+}
+function syncAppClass(c){
+  if(!c||!data.classes[c])return;
+  const a=document.getElementById("classAbsence"),h=document.getElementById("classHomework");
+  if(a)a.value=c;if(h)h.value=c;
+  const n=document.getElementById("noteClass");if(n&&n.value!==c)n.value=c;
+  const f=document.getElementById("notesFilterClass");if(f&&[...f.options].some(o=>o.value===c))f.value=c;
+  try{saveDraft();renderStudents();}catch(e){}
+}
+function notesFilterClassChanged(){
+  const v=document.getElementById("notesFilterClass").value;
+  if(v!=="all")syncAppClass(v);
+  renderNotes();
+}
+function noteClassChanged(){syncAppClass(document.getElementById("noteClass").value);fillStudentSelect("noteClass","noteStudent");noteRecPick=null;noteRecMsg=null;renderNoteRecorder();}
 function renderNoteRecorder(){
   refreshTrackingSelects();
   ["List","Seat"].forEach(k=>{const b=document.getElementById("noteRecView"+k);if(b)b.classList.toggle("active",noteRecView===k.toLowerCase());});
   const seat=noteRecView==="seat",wrap=document.getElementById("noteStudentWrap"),host=document.getElementById("noteSeatPicker");
   if(!wrap||!host)return;
   wrap.hidden=seat;host.hidden=!seat;
+  const sb=document.getElementById("noteSaveBtn");if(sb)sb.style.display=seat?"none":"";
   if(!seat)return;
   const c=document.getElementById("noteClass").value,names=data.classes[c]||[];
   if(noteRecPick&&!names.includes(noteRecPick))noteRecPick=null;
@@ -1575,12 +1697,12 @@ function renderNoteRecorder(){
   }).join("");
   const seated=new Set(L.seats.filter(Boolean)),extra=names.filter(n=>!seated.has(n));
   const chips=extra.length?`<div class="sc-pool" style="display:block"><h4>تلاميذ بدون مقعد</h4><div class="sc-chips">${extra.map(n=>`<button type="button" class="sc-chip${noteRecPick===n?" sel":""}" data-name="${esc(n)}" onclick="recPickSeat(this.dataset.name)">${esc(n)}</button>`).join("")}</div></div>`:"";
-  const picked=noteRecPick?`<div class="ns-picked">✅ التلميذ المختار: <strong>${esc(noteRecPick)}</strong></div>`:'<div class="ns-picked none">اضغط على مقعد التلميذ لاختياره.</div>';
-  host.innerHTML=`<div class="sc-wrap"><div class="sc-stage"><div class="sc-grid" style="--cols:${L.cols};grid-template-columns:repeat(${L.cols},minmax(0,1fr))">${seatHTML}</div></div>${chips}${picked}</div>`;
+  const picked=noteRecMsg?`<div class="ns-picked">✅ سُجلت ملاحظة «${esc(noteRecMsg.label)}» للتلميذ <strong>${esc(noteRecMsg.name)}</strong> <button type="button" class="btn gray" style="padding:3px 10px;font-size:12px;margin-inline-start:6px" onclick="undoLastNote()">↩️ تراجع</button></div>`:'<div class="ns-picked none">اختر نوع الملاحظة ثم اضغط على اسم التلميذ في المخطط لتسجيلها مباشرة.</div>';
+  host.innerHTML=`<div class="sc-wrap">${picked}<div class="sc-stage"><div class="sc-grid" style="--cols:${L.cols};grid-template-columns:repeat(${L.cols},minmax(0,1fr))">${seatHTML}</div></div>${chips}</div>`;
 }
 function noteCardHTML(n,labels){
   const id=String(n.id||"").replace(/'/g,"\\'");
-  return `<article class="note-card"><div class="note-card-top"><div><div class="note-student">${esc(n.student||"تلميذ غير محدد")}</div><div class="note-class">القسم: ${esc(n.className||"—")}</div></div><span class="note-type-pill" style="${noteCatStyle(n.type)}">${labels[n.type]||labels.other}</span></div><div class="note-date">📅 ${esc(n.date||"بدون تاريخ")}</div><p class="note-body">${esc(n.text||"")}</p><div class="note-card-actions" style="justify-content:space-between;gap:6px"><button class="btn gray" onclick="editNote('${id}')">✏️ تعديل</button><button class="btn danger" onclick="deleteNote('${id}')">حذف</button></div></article>`;
+  return `<article class="note-card"><div class="note-card-top"><div><div class="note-student">${esc(n.student||"تلميذ غير محدد")}</div><div class="note-class">القسم: ${esc(n.className||"—")}</div></div><span class="note-type-pill" style="${noteCatStyle(n.type)}">${labels[n.type]||labels.other}</span></div><div class="note-date">📅 ${esc(n.date||"بدون تاريخ")}</div>${n.text?`<p class="note-body">${esc(n.text)}</p>`:""}<div class="note-card-actions" style="justify-content:space-between;gap:6px"><button class="btn gray" onclick="editNote('${id}')">✏️ تعديل</button><button class="btn danger" onclick="deleteNote('${id}')">حذف</button></div></article>`;
 }
 function renderNotesSeating(host,filtered,c,labels){
   const colors=noteColorsMap();
@@ -1627,7 +1749,7 @@ function renderNotes(){
   const order=noteTypeIds().concat("other");
   host.innerHTML=order.filter(type=>(chosenType==="all"||chosenType===type)&&filtered.some(n=>(n.type||"other")===type)).map(type=>{
     const items=filtered.filter(n=>(n.type||"other")===type);
-    return `<section class="notes-category ${type}" style="${noteCatStyle(type)}"><h3 class="notes-category-title"><span>${labels[type]}</span><span class="count">${items.length}</span></h3><div class="notes-grid">${items.map(n=>`<article class="note-card"><div class="note-card-top"><div><div class="note-student">${esc(n.student||"تلميذ غير محدد")}</div><div class="note-class">القسم: ${esc(n.className||"—")}</div></div><span class="note-type-pill" style="${noteCatStyle(n.type)}">${labels[n.type]||labels.other}</span></div><div class="note-date">📅 ${esc(n.date||"بدون تاريخ")}</div><p class="note-body">${esc(n.text||"")}</p><div class="note-card-actions" style="justify-content:space-between;gap:6px"><button class="btn gray" onclick="editNote('${String(n.id||"").replace(/'/g,"\\'")}')">✏️ تعديل</button><button class="btn danger" onclick="deleteNote('${String(n.id||"").replace(/'/g,"\\'")}')">حذف</button></div></article>`).join("")}</div></section>`;
+    return `<section class="notes-category ${type}" style="${noteCatStyle(type)}"><h3 class="notes-category-title"><span>${labels[type]}</span><span class="count">${items.length}</span></h3><div class="notes-grid">${items.map(n=>`<article class="note-card"><div class="note-card-top"><div><div class="note-student">${esc(n.student||"تلميذ غير محدد")}</div><div class="note-class">القسم: ${esc(n.className||"—")}</div></div><span class="note-type-pill" style="${noteCatStyle(n.type)}">${labels[n.type]||labels.other}</span></div><div class="note-date">📅 ${esc(n.date||"بدون تاريخ")}</div>${n.text?`<p class="note-body">${esc(n.text)}</p>`:""}<div class="note-card-actions" style="justify-content:space-between;gap:6px"><button class="btn gray" onclick="editNote('${String(n.id||"").replace(/'/g,"\\'")}')">✏️ تعديل</button><button class="btn danger" onclick="deleteNote('${String(n.id||"").replace(/'/g,"\\'")}')">حذف</button></div></article>`).join("")}</div></section>`;
   }).join("");
 }
 function editNote(id){
@@ -1642,7 +1764,7 @@ function editNote(id){
     `<label>التلميذ</label><select id="editNoteStudent"></select>`+
     `<div class="row"><div><label>التاريخ</label><input id="editNoteDate" type="date" value="${esc(n.date||"")}"></div>`+
     `<div><label>نوع الملاحظة</label><select id="editNoteType">${types.map(t=>`<option value="${esc(t.id)}"${(n.type||"other")===t.id?" selected":""}>${esc(t.label)}</option>`).join("")}</select></div></div>`+
-    `<label>تفاصيل الملاحظة</label><textarea id="editNoteText">${esc(n.text||"")}</textarea>`+
+    `<label>تفاصيل الملاحظة (اختيارية)</label><textarea id="editNoteText">${esc(n.text||"")}</textarea>`+
     `<div style="display:flex;gap:8px;margin-top:12px"><button class="btn primary" style="flex:1" onclick="saveEditedNote('${sid}')">💾 حفظ التعديل</button><button class="btn danger" onclick="closeModal();deleteNote('${sid}')">🗑️ حذف</button></div>`;
   window._editNoteStudent=n.student||"";
   editNoteClassChanged();
@@ -1659,7 +1781,6 @@ function editNoteClassChanged(){
 function saveEditedNote(id){
   const n=notes.find(x=>String(x.id)===String(id));if(!n)return closeModal();
   const text=document.getElementById("editNoteText").value.trim();
-  if(!text)return alert("لا يمكن حفظ ملاحظة فارغة.");
   const student=document.getElementById("editNoteStudent").value;
   if(!student)return alert("اختر تلميذاً.");
   n.className=document.getElementById("editNoteClass").value;
@@ -1710,7 +1831,7 @@ function renderDashboardClassGrid(){
     const hw=rs.filter(r=>r.type==="homework").reduce((n,r)=>n+(r.names||[]).length,0);
     const noteCount=(notes||[]).filter(x=>x.className===c).length;
     const key=encodeURIComponent(c);
-    return `<button type="button" class="dash-class-card" onclick="openDashboardClass(decodeURIComponent('${key}'))" aria-label="فتح إحصائيات ${esc(c)}"><div class="dash-class-top"><span class="dash-class-symbol">${String(i+1).padStart(2,"0")}</span><span class="dash-class-arrow">↙</span></div><div class="dash-class-name">${esc(c)}</div><div class="dash-class-students">${(data.classes[c]||[]).length} تلميذ(ة)</div><div class="dash-class-metrics"><div class="dash-class-metric abs"><span>حالات الغياب</span><strong>${abs}</strong></div><div class="dash-class-metric hw"><span>واجبات غير منجزة</span><strong>${hw}</strong></div></div><div class="dash-class-footer"><span>${noteCount} ملاحظة تربوية</span><span>عرض الإحصائيات ←</span></div></button>`;
+    return `<button type="button" class="dash-class-card" onclick="openDashboardClass(decodeURIComponent('${key}'))" aria-label="فتح إحصائيات ${esc(c)}"><div class="dash-class-top"><div class="dash-class-name">${esc(c)}</div><span class="dash-class-arrow">↙</span></div><div class="dash-class-students">${(data.classes[c]||[]).length} تلميذ(ة)</div><div class="dash-class-metrics"><div class="dash-class-metric abs"><span>حالات الغياب</span><strong>${abs}</strong></div><div class="dash-class-metric hw"><span>واجبات غير منجزة</span><strong>${hw}</strong></div></div><div class="dash-class-footer"><span>${noteCount} ملاحظة تربوية</span><span>عرض الإحصائيات ←</span></div></button>`;
   }).join("");
 }
 function resetDashboardFilters(){
@@ -1798,7 +1919,7 @@ function renderDashboardPeople(type,selectedClass,period,records,filteredNotes){
     if(!items.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1">لا توجد ملاحظات مسجلة ضمن القسم والفترة المختارين.</div>';return;}
     grid.innerHTML=order.filter(k=>items.some(n=>(n.type||"other")===k)).map(k=>{
       const group=items.filter(n=>(n.type||"other")===k);
-      return `<section class="notes-category ${k}" style="grid-column:1/-1;${noteCatStyle(k)}"><h3 class="notes-category-title"><span>${labels[k]}</span><span class="count">${group.length}</span></h3><div class="notes-grid">${group.map(n=>`<article class="note-card"><div class="note-card-top"><div><div class="note-student">${esc(n.student||"تلميذ غير محدد")}</div><div class="note-class">القسم: ${esc(n.className||"—")}</div></div><span class="note-type-pill">${labels[k]}</span></div><div class="note-date">📅 ${esc(n.date||"بدون تاريخ")}</div><p class="note-body">${esc(n.text||"")}</p></article>`).join("")}</div></section>`;
+      return `<section class="notes-category ${k}" style="grid-column:1/-1;${noteCatStyle(k)}"><h3 class="notes-category-title"><span>${labels[k]}</span><span class="count">${group.length}</span></h3><div class="notes-grid">${group.map(n=>`<article class="note-card"><div class="note-card-top"><div><div class="note-student">${esc(n.student||"تلميذ غير محدد")}</div><div class="note-class">القسم: ${esc(n.className||"—")}</div></div><span class="note-type-pill">${labels[k]}</span></div><div class="note-date">📅 ${esc(n.date||"بدون تاريخ")}</div>${n.text?`<p class="note-body">${esc(n.text)}</p>`:""}</article>`).join("")}</div></section>`;
     }).join("");
     return;
   }
@@ -1939,7 +2060,7 @@ function saveStudent(){
 }
 function deleteStudent(i){
  let c=document.getElementById("classAbsence").value;
- if(confirm("هل تريد حذف "+data.classes[c][i]+"؟ سيتم تنزيل نسخة أمان قبل الحذف.")){try{createSafetyBackup("حذف-تلميذ")}catch(e){return alert(e.message+" أُلغي الحذف حفاظاً على بياناتك.");}data.classes[c].splice(i,1); homework[c]={}; selected[c]={}; save(); renderStudents()}
+ if(confirm("هل تريد حذف "+data.classes[c][i]+"؟ ")){try{createSafetyBackup("حذف-تلميذ")}catch(e){return alert(e.message+" أُلغي الحذف حفاظاً على بياناتك.");}data.classes[c].splice(i,1); homework[c]={}; selected[c]={}; save(); renderStudents()}
 }
 function manageClasses(){
  document.getElementById("modalTitle").textContent="إدارة الأقسام";
@@ -1948,7 +2069,7 @@ function manageClasses(){
  document.getElementById("modal").style.display="flex";
 }
 function addClass(){let n=document.getElementById("newClass").value.trim();if(!n||data.classes[n])return alert("اسم القسم غير صالح أو موجود مسبقاً");data.classes[n]=[];save();closeModal();renderClasses();document.getElementById("classAbsence").value=n;document.getElementById("classHomework").value=n;renderStudents()}
-function deleteClass(e){let c=decodeURIComponent(e);if(Object.keys(data.classes).length<=1)return alert("يجب الاحتفاظ بقسم واحد على الأقل");if(confirm("حذف القسم "+c+"؟ سيتم تنزيل نسخة أمان قبل الحذف.")){try{createSafetyBackup("حذف-قسم")}catch(err){return alert(err.message+" أُلغي الحذف حفاظاً على بياناتك.");}delete data.classes[c];delete seatStore[c];saveSeatStore();save();closeModal();renderClasses()}}
+function deleteClass(e){let c=decodeURIComponent(e);if(Object.keys(data.classes).length<=1)return alert("يجب الاحتفاظ بقسم واحد على الأقل");if(confirm("حذف القسم "+c+"؟ ")){try{createSafetyBackup("حذف-قسم")}catch(err){return alert(err.message+" أُلغي الحذف حفاظاً على بياناتك.");}delete data.classes[c];delete seatStore[c];saveSeatStore();save();closeModal();renderClasses()}}
 function closeModal(){document.getElementById("modal").style.display="none"}
 function sendWhatsApp(){
  let c=document.getElementById("classAbsence").value,list=data.classes[c]||[],s=selected[c]||{};
@@ -2088,7 +2209,7 @@ async function importBackup(){
   let payload;
   try{payload=await readAndValidateBackup(file)}catch(e){showBackupStatus("لم يتم الاسترجاع: "+e.message,false);return alert("لم يتم استرجاع البيانات. "+e.message);}
   const count=Object.values(payload.data.classes).reduce((n,a)=>n+a.length,0);
-  if(!confirm(`تم التحقق من الملف: ${Object.keys(payload.data.classes).length} أقسام و${count} تلميذ(ة). سيتم استبدال البيانات الحالية. سينزّل التطبيق نسخة أمان من بياناتك الحالية أولاً. هل تريد المتابعة؟`))return;
+  if(!confirm(`تم التحقق من الملف: ${Object.keys(payload.data.classes).length} أقسام و${count} تلميذ(ة). سيتم استبدال البيانات الحالية. هل تريد المتابعة؟`))return;
   try{createSafetyBackup("قبل-استرجاع-نسخة")}catch(e){showBackupStatus(e.message+" أُلغي الاسترجاع حفاظاً على البيانات الحالية.",false);return alert(e.message+" أُلغي الاسترجاع.");}
   try{
     // Validate before changing any live variables, then persist the complete dataset.
@@ -2103,14 +2224,14 @@ async function importBackup(){
       if(payload.draft)localStorage.setItem("absencePhysicsDraft",JSON.stringify(payload.draft));
       selected={};homework={};
       renderClasses();renderHistory();renderNoteTypeSelects(true);renderNoteTypeManager();renderNotes();renderNoteRecorder();renderStats();renderDashboard();input.value="";
-      showBackupStatus("✓ تم استرجاع النسخة بنجاح. تم إنشاء نسخة أمان للبيانات السابقة قبل الاسترجاع.",true);
+      showBackupStatus("✓ تم استرجاع النسخة بنجاح.",true);
       alert("تم استرجاع النسخة الاحتياطية بنجاح.");
     }catch(writeError){
       data=old.data;history=old.history;notes=old.notes;customNoteTypes=old.noteTypes;hiddenBuiltinTypes=old.hidden;persistHiddenTypes();
       localStorage.setItem("absencePhysics",JSON.stringify(data));localStorage.setItem("absencePhysicsHistory",JSON.stringify(history));localStorage.setItem("absencePhysicsNotes",JSON.stringify(notes));localStorage.setItem("absencePhysicsNoteTypes",JSON.stringify(customNoteTypes));
       throw writeError;
     }
-  }catch(e){showBackupStatus("فشل الاسترجاع ولم يكتمل حفظ البيانات: "+e.message,false);alert("فشل الاسترجاع. احتفظ بنسخة الأمان التي تم تنزيلها. السبب: "+e.message);}
+  }catch(e){showBackupStatus("فشل الاسترجاع ولم يكتمل حفظ البيانات: "+e.message,false);alert("فشل الاسترجاع. السبب: "+e.message);}
 }
 document.getElementById("namesPaste")?.addEventListener("input",updateNamesPreview);
 renderClasses();
@@ -2162,6 +2283,67 @@ const cs=confirmStudentStatus;confirmStudentStatus=function(type,i){cs.apply(thi
 const sp=showPage;showPage=function(p){sp.apply(this,arguments);window.scrollTo({top:0});try{localStorage.setItem("v2LastPage",p)}catch(e){}};
 sync();
 try{const lp=localStorage.getItem("v2LastPage");if(lp&&lp!=="absence"&&document.getElementById("page"+lp.charAt(0).toUpperCase()+lp.slice(1)))showPage(lp);}catch(e){}
+})();
+</script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+let undoInfo=null;
+const mgC=()=>{const s=$("mgClass");return (s&&s.value)||Object.keys(data.classes)[0]};
+function fillMg(){const s=$("mgClass");if(!s)return;const old=s.value||$("classAbsence").value;
+ s.innerHTML=Object.keys(data.classes).map(c=>`<option>${esc(c)}</option>`).join("");
+ s.value=data.classes[old]?old:Object.keys(data.classes)[0];}
+function syncClass(c){["classAbsence","classHomework"].forEach(id=>{const e=$(id);if(e&&data.classes[c])e.value=c});}
+function shiftMap(o,i,dir){const r={};Object.keys(o||{}).forEach(ks=>{const k=+ks,v=o[ks];
+ if(dir<0){if(k<i)r[k]=v;else if(k>i)r[k-1]=v;}else r[k>=i?k+1:k]=v;});return r;}
+function refreshAll(){renderClasses();refreshTrackingSelects();renderNotes();renderNoteRecorder();renderDashboard();mgRender();}
+window.mgRender=function(){
+ const c=mgC(),list=data.classes[c]||[],q=($("mgSearch").value||"").trim().toLocaleLowerCase();
+ $("mgCount").textContent=list.length+" تلميذ";
+ const items=list.map((n,i)=>({n,i})).filter(x=>!q||x.n.toLocaleLowerCase().includes(q));
+ $("mgList").innerHTML=items.length?items.map(({n,i})=>`<li class="mg-row"><span class="mg-num">${i+1}</span><span class="mg-name">${esc(n)}</span><span class="mg-act"><button type="button" class="btn gray" onclick="mgEdit(${i})" aria-label="تعديل الاسم">✏️</button><button type="button" class="btn danger" onclick="mgDelete(${i})" aria-label="حذف التلميذ">🗑️</button></span></li>`).join(""):`<li class="empty">${list.length?"لا توجد نتيجة مطابقة.":"لا يوجد تلاميذ في هذا القسم. أضف أول تلميذ من الحقل أعلاه."}</li>`;
+ const u=$("mgUndo");if(undoInfo){u.hidden=false;$("mgUndoTxt").textContent="تم حذف «"+undoInfo.name+"» من "+undoInfo.c;}else u.hidden=true;
+};
+window.mgClassChanged=function(){syncClass(mgC());renderStudents();mgRender();};
+window.mgAdd=function(){
+ const inp=$("mgName"),c=mgC(),n=inp.value.replace(/\s+/g," ").trim();
+ if(!n){inp.focus();return}
+ if((data.classes[c]||[]).some(x=>x.trim().toLocaleLowerCase()===n.toLocaleLowerCase()))return alert("«"+n+"» موجود مسبقاً في هذا القسم.");
+ data.classes[c].push(n);seatAutoPlace(c);save();syncClass(c);refreshAll();
+ inp.value="";inp.focus();alert("✓ أُضيف «"+n+"» إلى "+c);
+};
+window.mgDelete=function(i,cls){
+ const c=cls||mgC(),name=(data.classes[c]||[])[i];if(name===undefined)return;
+ if(!confirm("حذف «"+name+"» من القسم "+c+"؟"))return;
+ undoInfo={c,name,i};data.classes[c].splice(i,1);
+ selected[c]=shiftMap(selected[c],i,-1);homework[c]=shiftMap(homework[c],i,-1);
+ save();syncClass(c);refreshAll();alert("🗑️ تم حذف «"+name+"»");
+};
+window.mgUndo=function(){
+ if(!undoInfo)return;const {c,name,i}=undoInfo;undoInfo=null;
+ if(!data.classes[c]||data.classes[c].includes(name))return mgRender();
+ data.classes[c].splice(Math.min(i,data.classes[c].length),0,name);
+ selected[c]=shiftMap(selected[c],i,1);homework[c]=shiftMap(homework[c],i,1);
+ seatAutoPlace(c);save();syncClass(c);refreshAll();alert("↩️ أُعيد «"+name+"»");
+};
+window.mgEdit=function(i){syncClass(mgC());editStudent(i);};
+window.deleteStudent=function(i){mgDelete(i,$("classAbsence").value)};
+window.addStudent=function(){showPage("students");setTimeout(()=>$("mgName")&&$("mgName").focus(),80)};
+window.openStudents=()=>showPage("students");
+const ss=saveStudent;window.saveStudent=function(){ss.apply(this,arguments);fillMg();mgRender();};
+const rc=renderClasses;window.renderClasses=function(){rc.apply(this,arguments);fillMg();if($("mgList"))mgRender();};
+const sp2=showPage;
+showPage=function(p){
+ sp2.apply(this,arguments);
+ const pg=$("pageStudents");if(pg)pg.classList.toggle("active",p==="students");
+ const b=$("subStudents");if(b)b.classList.toggle("active",p==="students");
+ if(p==="students"){fillMg();const cur=$("classAbsence").value;if(data.classes[cur])$("mgClass").value=cur;mgRender();}
+};
+["pageAbsence","pageHomework"].forEach(id=>{const card=document.querySelector("#"+id+">.card:first-child");
+ if(card){const d=document.createElement("div");d.className="card-tools";
+ d.innerHTML='<button type="button" class="btn gray mini" onclick="openStudents()">👥 إدارة التلاميذ (إضافة / حذف)</button>';card.appendChild(d);}});
+fillMg();mgRender();
+try{if(localStorage.getItem("v2LastPage")==="students")showPage("students")}catch(e){}
 })();
 </script>
 </body>
