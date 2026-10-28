@@ -703,6 +703,15 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
 #seatView .sc-seat.absent:after,#hw_seatView .sc-seat.absent:after{width:clamp(9px,calc(100cqw / var(--cols) / 6),17px);height:clamp(9px,calc(100cqw / var(--cols) / 6),17px);top:2px;background-size:70%}
 #seatView .sc-stage:after,#hw_seatView .sc-stage:after{margin-top:clamp(6px,1.5cqw,16px);padding:clamp(4px,1cqw,10px);font-size:clamp(10px,2.2cqw,14px)}
 </style>
+<style id="v9">
+/* ===== v9: تنظيم موحّد بدون تكرار العناوين ===== */
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.card-head-t{font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.2px}
+.notes-browser-head{margin-bottom:10px}
+.card>strong:first-child{font-size:.95rem;border-bottom:0;padding-bottom:4px;margin-bottom:2px}
+#pageAbsence>.card:first-child,#pageHomework>.card:first-child,#pageSeating>.card:first-child{margin-top:0}
+.dash-hero{margin-top:0}
+</style>
 </head>
 <body>
 <header>
@@ -718,12 +727,14 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
     <button id="navClass" class="tab active" onclick="showPage('absence')"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4V3h6v1"/><path d="M8.5 12.5l2.2 2.2 4.3-4.6"/></svg><span>تدبير القسم</span></button>
     <button id="navTracking" class="tab" onclick="showPage('notes')"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/></svg><span>التتبع</span></button>
     <button id="navRecords" class="tab" onclick="showPage('history')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><rect x="5.5" y="11" width="3" height="9"/><rect x="10.5" y="6" width="3" height="14"/><rect x="15.5" y="13" width="3" height="7"/></svg><span>السجلات</span></button>
+  
     <button id="navSettings" class="tab" onclick="showPage('import')"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg><span>البيانات</span></button>
   </nav>
   <div id="subnavClass" class="subnav" aria-label="وظائف تدبير القسم">
     <button id="subAbsence" class="subtab active" onclick="showPage('absence')">❌ تسجيل الغياب</button>
     <button id="subHomework" class="subtab" onclick="showPage('homework')">📚 الواجبات</button>
     <button id="subSeating" class="subtab" onclick="showPage('seating')">✏️ ترتيب المقاعد</button>
+    <button id="subStudents" class="subtab" onclick="showPage('students')">👥 إدارة التلاميذ</button>
   </div>
   <div id="subnavTracking" class="subnav" hidden aria-label="وظائف التتبع التربوي">
     <button id="subNotes" class="subtab" onclick="showPage('notes')">📝 تسجيل الملاحظات</button>
@@ -734,7 +745,6 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
     <button id="subStats" class="subtab" onclick="showPage('stats')">📈 الإحصائيات والتقارير</button>
   </div>
   <div id="subnavSettings" class="subnav" hidden aria-label="إعدادات البيانات">
-    <button id="subStudents" class="subtab" onclick="showPage('students')">👥 التلاميذ والأقسام</button>
     <button id="subImport" class="subtab" onclick="showPage('import')">📥 الاستيراد والنسخ الاحتياطي</button>
   </div>
 
@@ -760,10 +770,7 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
     </div>
 
     <div class="card" id="seatView">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <strong>🪑 الغياب من مخطط الجلوس</strong>
-        <span class="badge" id="seatCount">0</span>
-      </div>
+      <div class="card-head"><span class="card-head-t">مخطط الجلوس</span><span class="badge" id="seatCount">0</span></div>
       <div class="sc-wrap">
         <div class="sc-hint" id="seatHint"></div>
         <div class="sc-stats" id="seatStats"></div>
@@ -777,11 +784,7 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
     </div>
 
     <div class="card" id="listView" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <strong>التلاميذ الغائبون</strong>
-
-        <span class="badge" id="count">0 غائب</span>
-      </div>
+      <div class="card-head"><span class="card-head-t">لائحة التلاميذ</span><span class="badge" id="count">0 غائب</span></div>
       <label for="searchAbsence">🔎 البحث عن تلميذ</label><input id="searchAbsence" type="search" placeholder="اكتب اسم التلميذ..." oninput="renderStudents()"><div id="students"></div>
       <details class="bulk-actions"><summary>إجراءات جماعية: تحديد أو إلغاء الكل</summary>
         <div class="actions">
@@ -823,10 +826,7 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
     </div>
 
     <div class="card" id="hw_seatView">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <strong>🪑 الواجبات من مخطط الجلوس</strong>
-        <span class="badge" id="hw_seatCount">0</span>
-      </div>
+      <div class="card-head"><span class="card-head-t">مخطط الجلوس</span><span class="badge" id="hw_seatCount">0</span></div>
       <div class="sc-wrap">
         <div class="sc-hint" id="hw_seatHint"></div>
         <div class="sc-stats" id="hw_seatStats"></div>
@@ -840,11 +840,7 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
     </div>
 
     <div class="card" id="hw_listView" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <strong>📚 عدم إنجاز الواجبات المنزلية</strong>
-
-        <span class="badge" id="hwCount">0 لم ينجز</span>
-      </div>
+      <div class="card-head"><span class="card-head-t">لائحة التلاميذ</span><span class="badge" id="hwCount">0 لم ينجز</span></div>
       <label for="searchHomework">🔎 البحث عن تلميذ</label><input id="searchHomework" type="search" placeholder="اكتب اسم التلميذ..." oninput="renderStudents()"><div id="homework"></div>
       <details class="bulk-actions"><summary>إجراءات جماعية: تحديد أو إلغاء الكل</summary>
         <div class="actions">
@@ -870,23 +866,19 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
       <select id="classSeating" onchange="seatChangeClass(this.value)"></select>
     </div>
     <div class="card" id="ar_seatView">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-        <strong>✏️ ترتيب المقاعد</strong>
-        <span class="badge" id="ar_seatCount">0</span>
-      </div>
+      <div class="card-head"><span class="card-head-t">مخطط القسم</span><span class="badge" id="ar_seatCount">0</span></div>
       <div class="sc-wrap">
         <div class="sc-printhead" id="ar_printHead"></div>
         <div class="sc-hint" id="ar_seatHint"></div>
         <div class="sc-tools" id="ar_seatTools">
           <label class="sc-f">صفوف <input class="sc-in" id="ar_seatRows" type="number" min="1" max="12" value="5"></label>
           <label class="sc-f">أعمدة <input class="sc-in" id="ar_seatCols" type="number" min="1" max="10" value="6"></label>
-          <button type="button" class="sc-btn" onclick="seatShuffle('arrange')">🎲 توزيع عشوائي</button>
-          <button type="button" class="sc-btn" onclick="seatSort('arrange')">🔤 ترتيب أبجدي</button>
-          <button type="button" class="sc-btn" onclick="seatReset('arrange')">↩️ الترتيب الأصلي</button>
           <button type="button" class="sc-btn main" onclick="seatPrint()">🖨️ طباعة</button>
           <button type="button" class="sc-btn" id="ar_seatUndo" onclick="seatUndo('arrange')" disabled>⤺ تراجع</button>
+          <button type="button" class="sc-btn main" onclick="saveSeatingToHistory()">📥 حفظ في السجل</button>
         </div>
         <div class="sc-stats" id="ar_seatStats"></div>
+        <div class="small" style="margin:6px 0">☁️ الحفظ التلقائي يبقى مفعّلاً. زر «حفظ في السجل» ينشئ نسخة مؤرخة من الترتيب الحالي في صفحة السجل.</div>
         <div class="sc-stage"><div id="ar_seatGrid" class="sc-grid"></div></div>
         <div class="sc-pool" id="ar_seatPool">
           <h4>تلاميذ بدون مقعد</h4>
@@ -897,8 +889,8 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
   </div>
 
   <div id="pageStudents" class="page">
- <div class="card">
-  <div class="sec-head"><div><h2>👥 إدارة التلاميذ</h2><p>أضف تلميذاً إلى القسم، أو عدّل اسمه، أو احذفه يدوياً.</p></div><span class="badge" id="mgCount">0 تلميذ</span></div>
+ <div class="card" id="mgCard">
+  <div class="card-head"><span class="card-head-t">لائحة القسم</span><span class="badge" id="mgCount">0 تلميذ</span></div>
   <div class="mg-top"><div><label for="mgClass">القسم</label><select id="mgClass" onchange="mgClassChanged()"></select></div><button type="button" class="btn gray" onclick="manageClasses()">⚙️ الأقسام</button></div>
   <label for="mgName">إضافة تلميذ جديد</label>
   <div class="mg-add"><input id="mgName" placeholder="الاسم الكامل للتلميذ" autocomplete="off" enterkeyhint="done" onkeydown="if(event.key==='Enter'){event.preventDefault();mgAdd()}"><button type="button" class="btn primary" onclick="mgAdd()">➕ إضافة</button></div>
@@ -912,7 +904,7 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
 
   <div id="pageImport" class="page">
   <div class="card">
-    <strong>📥 استيراد لائحة التلاميذ</strong>
+    <strong>📥 لائحة التلاميذ</strong>
     <p class="small">استورد ملفاً نصياً (.txt) أو الصق الأسماء مباشرة (اسم في كل سطر)، ثم حدّد هل تريد إضافة الأسماء أم استبدال لائحة القسم المختار.</p>
     <label>القسم الذي ستُستورد إليه الأسماء</label>
     <select id="importClass"></select>
@@ -932,7 +924,7 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
     <button class="btn gray" style="width:100%" onclick="showPage('students')">👥 إضافة أو حذف تلميذ يدوياً / إدارة الأقسام</button>
   </div>
   <div class="card">
-    <strong>🛡️ النسخ الاحتياطي واسترجاع البيانات</strong>
+    <strong>🛡️ النسخة الاحتياطية</strong>
     <p class="small">احفظ نسخة من الأقسام والتلاميذ والسجل لاستعادتها عند تغيير الهاتف أو حذف بيانات المتصفح.</p>
     <button class="btn green" style="width:100%;margin-top:8px" onclick="exportBackup()">⬇️ إنشاء نسخة احتياطية كاملة</button>
     <div id="backupStatus" class="alert-item" role="status" style="display:none;margin-top:10px"></div>
@@ -946,10 +938,8 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
 
   <div id="pageHistory" class="page">
     <div class="card">
-      <strong>🗂️ السجل التاريخي</strong>
-      <p class="small">العمليات المحفوظة على هذا الجهاز فقط. احفظ الغياب أو الواجبات من واجهتهما لتظهر هنا.</p>
-      <div class="row">
-        <div><label>نوع السجل</label><select id="historyType" onchange="renderHistory()"><option value="all">الكل</option><option value="absence">الغياب</option><option value="homework">الواجبات</option></select></div>
+            <div class="row">
+        <div><label>نوع السجل</label><select id="historyType" onchange="renderHistory()"><option value="all">الكل</option><option value="absence">الغياب</option><option value="homework">الواجبات</option><option value="seating">ترتيب المقاعد</option><option value="notes">الملاحظات</option></select></div>
         <div><label>القسم</label><select id="historyClass" onchange="renderHistory()"><option value="all">جميع الأقسام</option></select></div>
       </div>
       <div class="row">
@@ -966,9 +956,7 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
 
   <div id="pageNotes" class="page">
     <div class="card">
-      <strong>📝 تسجيل الملاحظات</strong>
-      <p class="small">تدوين ملاحظات حول المشاركة، الانضباط، الصعوبات الدراسية، أو ملاحظات أخرى.</p>
-      <div class="sc-viewbar" role="tablist" aria-label="طريقة اختيار التلميذ"><button type="button" id="noteRecViewList" class="subtab active" onclick="setNoteRecView('list')">🗂️ حسب القسم (قائمة)</button><button type="button" id="noteRecViewSeat" class="subtab" onclick="setNoteRecView('seat')">🪑 حسب مخطط الجلوس</button></div>
+            <div class="sc-viewbar" role="tablist" aria-label="طريقة اختيار التلميذ"><button type="button" id="noteRecViewSeat" class="subtab" onclick="setNoteRecView('seat')">🪑 حسب مخطط الجلوس</button><button type="button" id="noteRecViewList" class="subtab active" onclick="setNoteRecView('list')">🗂️ حسب القسم (قائمة)</button></div>
       <div class="row">
         <div><label>القسم</label><select id="noteClass"></select></div>
         <div id="noteStudentWrap"><label>التلميذ</label><select id="noteStudent"></select></div>
@@ -990,12 +978,14 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
       <label>تفاصيل الملاحظة <span class="small">(اختيارية)</span></label><textarea id="noteText" placeholder="اختياري: أضف تفاصيل إن أردت..."></textarea>
       <div id="noteSeatPicker" hidden></div>
       <button class="btn primary" id="noteSaveBtn" style="width:100%;margin-top:10px" onclick="saveNote()">💾 حفظ الملاحظة</button>
+      <button type="button" class="btn gray" id="noteHistBtn" style="width:100%;margin-top:8px" onclick="saveNotesToHistory()">📥 حفظ ملاحظات هذا اليوم في السجل</button>
+      <div class="small" style="margin-top:6px">الحفظ التلقائي يبقى مفعّلاً. هذا الزر يضيف نسخة من ملاحظات القسم في التاريخ المختار إلى صفحة السجل.</div>
     </div>
   </div>
 
   <div id="pageNoteslog" class="page">
     <div class="card notes-browser-card">
-      <div class="notes-browser-head"><div><strong>📚 الملاحظات المسجلة</strong><p class="small">شبكة منظمة حسب نوع الملاحظة</p></div><span id="notesCount" class="badge">0 ملاحظة</span></div>
+      <div class="notes-browser-head"><span class="card-head-t">عرض الملاحظات</span><span id="notesCount" class="badge">0 ملاحظة</span></div>
       <div class="sc-viewbar" role="tablist" aria-label="طريقة عرض الملاحظات"><button type="button" id="notesViewType" class="subtab active" onclick="setNotesView('type')">🗂️ حسب النوع</button><button type="button" id="notesViewSeat" class="subtab" onclick="setNotesView('seat')">🪑 حسب مخطط الجلوس</button></div>
       <div class="row notes-filters">
         <div><label for="notesFilterClass">تصفية حسب القسم</label><select id="notesFilterClass" onchange="notesFilterClassChanged()"><option value="all">جميع الأقسام</option></select></div>
@@ -1053,9 +1043,7 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
 
   <div id="pageStats" class="page">
     <div class="card">
-      <strong>📊 لوحة الإحصائيات والتقارير</strong>
-      <p class="small">تعتمد المؤشرات على العمليات المحفوظة في السجل التاريخي. سجّل الغياب أو الواجبات أولاً حتى تظهر البيانات هنا.</p>
-      <div class="row">
+            <div class="row">
         <div><label for="statsClass">القسم</label><select id="statsClass" onchange="renderStats()"><option value="all">جميع الأقسام</option></select></div>
         <div><label for="statsType">نوع الحالة</label><select id="statsType" onchange="renderStats()"><option value="all">الكل</option><option value="absence">الغياب</option><option value="homework">الواجبات غير المنجزة</option></select></div>
       </div>
@@ -1334,13 +1322,6 @@ function seatArrangeBy(k,order){
   const c=seatCls(k),L=seatLayout(c);if(!order.length)return;
   seatSnap(c,L);seatFit(L,order);seatCommit(c,L);renderSeatingAll();
 }
-function seatShuffle(k="absence"){
-  const a=(data.classes[seatCls(k)]||[]).slice();
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
-  seatArrangeBy(k,a);
-}
-function seatSort(k="absence"){seatArrangeBy(k,(data.classes[seatCls(k)]||[]).slice().sort((x,y)=>x.localeCompare(y,"ar")));}
-function seatReset(k="absence"){seatArrangeBy(k,(data.classes[seatCls(k)]||[]).slice());}
 function seatUndo(k="absence"){
   const c=seatCls(k),h=seatHist[c];if(!h||!h.length)return;
   const d=JSON.parse(h.pop());
@@ -1625,9 +1606,10 @@ function refreshTrackingSelects(){
 function saveNote(){
   const c=document.getElementById("noteClass").value, idx=Number(document.getElementById("noteStudent").value);
   const name=(data.classes[c]||[])[idx];const body=document.getElementById("noteText").value.trim();
-  if(!name)return alert("أضف تلاميذ إلى القسم أولاً.");
+  if(!(data.classes[c]||[]).length)return alert("أضف تلاميذ إلى القسم أولاً.");
+  if(!noteRecPick||noteRecPick!==name)return alert("اختر التلميذ أولاً من الشبكة.");
   notes.unshift({id:Date.now().toString(36),className:c,student:name,date:document.getElementById("noteDate").value||today(),type:document.getElementById("noteType").value,text:body});
-  persistNotes();document.getElementById("noteText").value="";renderNotes();renderNoteRecorder();renderDashboard();alert("تم حفظ الملاحظة.");
+  persistNotes();document.getElementById("noteText").value="";noteRecPick=null;renderNotes();renderNoteRecorder();renderDashboard();alert("تم حفظ الملاحظة.");
 }
 let notesView="type",notesSeatSel=null;
 try{notesView=localStorage.getItem("absencePhysicsNotesView")==="seat"?"seat":"type";}catch(e){}
@@ -1658,6 +1640,13 @@ function recPickSeat(name){
   noteRecPick=name;noteRecMsg={id,name,label:labels[type]||labels.other};
   renderNotes();renderNoteRecorder();renderDashboard();
 }
+function recPickList(i){
+  const c=document.getElementById("noteClass").value,name=(data.classes[c]||[])[i];
+  if(name===undefined)return;
+  noteRecPick=(noteRecPick===name)?null:name;
+  const sel=document.getElementById("noteStudent");if(sel&&noteRecPick)sel.value=String(i);
+  renderNoteRecorder();
+}
 function undoLastNote(){
   if(!noteRecMsg)return;
   notes=notes.filter(n=>String(n.id)!==String(noteRecMsg.id));
@@ -1683,14 +1672,18 @@ function renderNoteRecorder(){
   ["List","Seat"].forEach(k=>{const b=document.getElementById("noteRecView"+k);if(b)b.classList.toggle("active",noteRecView===k.toLowerCase());});
   const seat=noteRecView==="seat",wrap=document.getElementById("noteStudentWrap"),host=document.getElementById("noteSeatPicker");
   if(!wrap||!host)return;
-  wrap.hidden=seat;host.hidden=!seat;
+  wrap.hidden=true;host.hidden=false;
   const sb=document.getElementById("noteSaveBtn");if(sb)sb.style.display=seat?"none":"";
-  if(!seat)return;
   const c=document.getElementById("noteClass").value,names=data.classes[c]||[];
   if(noteRecPick&&!names.includes(noteRecPick))noteRecPick=null;
-  if(!names.length){host.innerHTML='<div class="empty">لا يوجد تلاميذ في هذا القسم. أضفهم من صفحة «البيانات».</div>';return;}
-  const L=seatLayout(c),cnt={};
+  if(!names.length){host.innerHTML='<div class="empty">لا يوجد تلاميذ في هذا القسم. أضفهم من خانة «إدارة التلاميذ».</div>';return;}
+  const cnt={};
   (Array.isArray(notes)?notes:[]).forEach(n=>{if(n.className===c)cnt[n.student]=(cnt[n.student]||0)+1;});
+  if(!seat){
+    host.innerHTML=`<label>التلميذ <span class="small">(اضغط على التلميذ لاختياره)</span></label><div class="student-grid">${names.map((n,i)=>`<button type="button" class="student-tile note-pick${noteRecPick===n?" picked":""}" onclick="recPickList(${i})"><span class="tile-num">${i+1}</span><div class="tile-name">${esc(n)}</div><div class="tile-state">${noteRecPick===n?"✓ محدد":(cnt[n]?cnt[n]+" ملاحظة":"اضغط للاختيار")}</div></button>`).join("")}</div>`;
+    return;
+  }
+  const L=seatLayout(c);
   const seatHTML=L.seats.map((n,i)=>{
     if(!n)return `<div class="sc-seat empty ns-seat" style="cursor:default"><span class="sc-n">${i+1}</span><span class="sc-nm">مقعد فارغ</span></div>`;
     return `<div class="sc-seat ns-seat${noteRecPick===n?" sel":""}" tabindex="0" role="button" data-name="${esc(n)}" onclick="recPickSeat(this.dataset.name)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();recPickSeat(this.dataset.name)}"><span class="sc-n">${names.indexOf(n)+1}</span>${cnt[n]?`<span class="ns-cnt">${cnt[n]}</span>`:""}<span class="sc-nm">${esc(n)}</span></div>`;
@@ -1958,17 +1951,15 @@ function renderStudents(){
   const homeworkItems=list.map((n,i)=>({n,i})).filter(x=>x.n.toLocaleLowerCase().includes(qH));
   document.getElementById("students").innerHTML=absenceItems.length?`<div class="student-grid">`+absenceItems.map(({n,i})=>`
  <div class="student-tile ${selected[c][i]?"selected":""}" role="button" tabindex="0" onclick="confirmStudentStatus('absence',${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();confirmStudentStatus('absence',${i})}">
+   <span class="tile-num" aria-label="الرقم الترتيبي ${i+1}">${i+1}</span>
    <div class="tile-name">${esc(n)}</div>
    <div class="tile-state">${selected[c][i]?"✓ غائب":"اضغط للتحديد"}</div>
-   <div class="tile-tools">
-    <button class="gray" onclick="event.stopPropagation();editStudent(${i})" aria-label="تعديل الاسم">✏️</button>
-    <button class="danger" onclick="event.stopPropagation();deleteStudent(${i})" aria-label="حذف التلميذ">🗑️</button>
-   </div>
  </div>`).join("")+`</div>`:'<div class="empty">لا يوجد تلاميذ. أضف تلميذاً للبدء.</div>';
 
  homework[c]=homework[c]||{};
  document.getElementById("homework").innerHTML=homeworkItems.length?`<div class="student-grid">`+homeworkItems.map(({n,i})=>`
  <button type="button" class="student-tile ${homework[c][i]?"selected":""}" onclick="confirmStudentStatus('homework',${i})">
+   <span class="tile-num" aria-label="الرقم الترتيبي ${i+1}">${i+1}</span>
    <div class="tile-name">${esc(n)}</div>
    <div class="tile-state">${homework[c][i]?"✓ لم ينجز الواجب":"اضغط للتحديد"}</div>
  </button>`).join("")+`</div>`:'<div class="empty">لا يوجد تلاميذ.</div>';
@@ -2025,6 +2016,43 @@ function saveHistoryRecord(type, className, date, period, names){
 }
 function saveAttendanceRecord(){const c=document.getElementById("classAbsence").value;const list=data.classes[c]||[];const s=selected[c]||{};saveHistoryRecord("absence",c,document.getElementById("dateAbsence").value,document.getElementById("periodAbsence").value,list.filter((_,i)=>s[i]));}
 function saveHomeworkRecord(){const c=document.getElementById("classHomework").value;const list=data.classes[c]||[];const s=homework[c]||{};saveHistoryRecord("homework",c,document.getElementById("dateHomework").value,document.getElementById("periodHomework").value,list.filter((_,i)=>s[i]));}
+function histRowHTML(r){
+ const head={absence:"❌ الغياب",homework:"📚 واجبات غير منجزة",seating:"🪑 ترتيب المقاعد",notes:"📝 الملاحظات"}[r.type]||"سجل";
+ let meta="",body="";
+ if(r.type==="seating"){
+  const seats=r.seats||[],cols=r.cols||1,n=seats.filter(Boolean).length;
+  meta=`التاريخ: ${esc(r.date)} • ${r.rows}×${r.cols} • على المقاعد: ${n}`;
+  body=`<details style="margin-top:8px"><summary>عرض المخطط</summary><div style="overflow-x:auto"><div style="display:grid;grid-template-columns:repeat(${cols},minmax(70px,1fr));gap:5px;margin-top:8px">${seats.map((x,i)=>`<div style="border:1px ${x?"solid":"dashed"} var(--line);border-radius:8px;padding:6px 3px;text-align:center;font-size:12px;min-height:38px"><span style="color:var(--muted);font-size:10px">${i+1}</span><br>${x?esc(x):"—"}</div>`).join("")}</div></div></details>`;
+ }else if(r.type==="notes"){
+  meta=`التاريخ: ${esc(r.date)} • عدد الملاحظات: ${(r.items||[]).length}`;
+  body=`<details style="margin-top:8px"><summary>عرض الملاحظات</summary><ol>${(r.items||[]).map(x=>`<li><strong>${esc(x.student||"")}</strong> <span class="small">(${esc(x.label||"")})</span>${x.text?"<br>"+esc(x.text):""}</li>`).join("")}</ol></details>`;
+ }else{
+  meta=`التاريخ: ${esc(r.date)}${r.period?" • "+esc(r.period):""} • العدد: ${(r.names||[]).length}`;
+  body=`<details style="margin-top:8px"><summary>عرض الأسماء</summary><ol>${(r.names||[]).map(n=>`<li>${esc(n)}</li>`).join("")}</ol></details>`;
+ }
+ return `<div class="student" style="display:block;padding:13px 0"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><strong>${head} — ${esc(r.className)}</strong><button class="btn danger" onclick="deleteHistoryRecord('${r.id}')">حذف</button></div><div class="small">${meta}</div>${body}</div>`;
+}
+function pushHistorySnapshot(rec,dupSig){
+ if(history.some(r=>r.type===rec.type&&r.className===rec.className&&r.date===rec.date&&r.sig===dupSig)){alert("هذه النسخة مسجلة مسبقاً في السجل بنفس القسم والتاريخ ولم تتغير.");return false;}
+ rec.sig=dupSig;history.unshift(rec);
+ try{localStorage.setItem("absencePhysicsHistory",JSON.stringify(history));}catch(e){history.shift();alert("تعذّر الحفظ في السجل. أنشئ نسخة احتياطية وحرّر مساحة التخزين.");return false;}
+ renderHistory();renderStats();setSaveStatus("✓ تم الحفظ في السجل");return true;
+}
+function saveSeatingToHistory(){
+ const c=seatCls("arrange");if(!c)return alert("اختر القسم أولاً.");
+ const L=seatLayout(c);
+ if(!L.seats.some(Boolean))return alert("لا يوجد تلاميذ على المقاعد لحفظهم.");
+ const rec={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),type:"seating",className:c,date:today(),period:"",names:[],rows:L.rows,cols:L.cols,seats:L.seats.slice(),savedAt:new Date().toISOString()};
+ if(pushHistorySnapshot(rec,JSON.stringify([L.rows,L.cols,L.seats])))alert("تم حفظ ترتيب المقاعد في السجل.");
+}
+function saveNotesToHistory(){
+ const c=document.getElementById("noteClass").value,d=document.getElementById("noteDate").value||today();
+ const labels=noteLabelsMap("أخرى");
+ const items=(Array.isArray(notes)?notes:[]).filter(n=>n.className===c&&(n.date||"")===d).map(n=>({id:n.id,student:n.student||"",label:labels[n.type]||labels.other,text:n.text||""}));
+ if(!items.length)return alert("لا توجد ملاحظات مسجلة لهذا القسم في التاريخ المختار.");
+ const rec={id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),type:"notes",className:c,date:d,period:"",names:[],items,savedAt:new Date().toISOString()};
+ if(pushHistorySnapshot(rec,JSON.stringify(items)))alert("تم حفظ ملاحظات اليوم في السجل.");
+}
 function renderHistory(){
  const classSelect=document.getElementById("historyClass");if(!classSelect)return;
  const old=classSelect.value;classSelect.innerHTML='<option value="all">جميع الأقسام</option>'+Object.keys(data.classes).map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");if([...classSelect.options].some(o=>o.value===old))classSelect.value=old;
@@ -2033,7 +2061,7 @@ function renderHistory(){
  document.getElementById("historySummary").textContent=`عدد العمليات: ${rows.length} • ${rows.reduce((n,r)=>n+r.names.length,0)} حالة مسجلة`;
  const host=document.getElementById("historyList");
  if(!rows.length){host.innerHTML='<div class="empty">لا توجد عمليات مطابقة للتصفية.</div>';return;}
- host.innerHTML=rows.map(r=>`<div class="student" style="display:block;padding:13px 0"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><strong>${r.type==="absence"?"❌ الغياب":"📚 واجبات غير منجزة"} — ${esc(r.className)}</strong><button class="btn danger" onclick="deleteHistoryRecord('${r.id}')">حذف</button></div><div class="small">التاريخ: ${esc(r.date)}${r.period?" • "+esc(r.period):""} • العدد: ${r.names.length}</div><details style="margin-top:8px"><summary>عرض الأسماء</summary><ol>${r.names.map(n=>`<li>${esc(n)}</li>`).join("")}</ol></details></div>`).join("");
+ host.innerHTML=rows.map(histRowHTML).join("");
 }
 function deleteHistoryRecord(id){if(!confirm("هل تريد حذف هذه العملية من السجل؟"))return;history=history.filter(r=>r.id!==id);localStorage.setItem("absencePhysicsHistory",JSON.stringify(history));renderHistory();renderStats();setSaveStatus("✓ تم تحديث السجل");}
 function clearHistoryFilters(){document.getElementById("historyType").value="all";document.getElementById("historyClass").value="all";document.getElementById("historyFrom").value="";document.getElementById("historyTo").value="";renderHistory();}
@@ -2098,7 +2126,7 @@ document.getElementById("classHomework").addEventListener("change",function(){
 function filteredStatsRecords(){
   const cl=document.getElementById("statsClass")?.value||"all";
   const type=document.getElementById("statsType")?.value||"all";
-  return history.filter(r=>(cl==="all"||r.className===cl)&&(type==="all"||r.type===type));
+  return history.filter(r=>(r.type==="absence"||r.type==="homework")&&(cl==="all"||r.className===cl)&&(type==="all"||r.type===type));
 }
 function renderStats(){
   const sel=document.getElementById("statsClass");if(!sel)return;
@@ -2174,7 +2202,7 @@ function exportFullReport(){
   }
   const wb=XLSX.utils.book_new();
   const students=[["القسم","اسم التلميذ"],...Object.entries(data.classes).flatMap(([c,names])=>names.map(n=>[c,n]))];
-  const records=[["التاريخ","القسم","نوع السجل","الحصة","عدد الحالات","أسماء التلاميذ"],...history.map(r=>[r.date||"",r.className||"",r.type==="absence"?"الغياب":"واجب غير منجز",r.period||"",(r.names||[]).length,(r.names||[]).join("، ")])];
+  const records=[["التاريخ","القسم","نوع السجل","الحصة","عدد الحالات","أسماء التلاميذ"],...history.map(r=>[r.date||"",r.className||"",({absence:"الغياب",homework:"واجب غير منجز",seating:"ترتيب المقاعد",notes:"ملاحظات"})[r.type]||"أخرى",r.period||"",(r.names||[]).length,r.type==="seating"?("مقاعد: "+(r.seats||[]).filter(Boolean).length):r.type==="notes"?("ملاحظات: "+(r.items||[]).length):(r.names||[]).join("، ")])];
   const noteRows=[["التاريخ","القسم","التلميذ","نوع الملاحظة","التفاصيل"],...notes.map(n=>[n.date||"",n.className||"",n.student||"",(noteLabelsMap("أخرى")[n.type]||"أخرى"),n.text||""])];
   [["التلاميذ",students],["الغياب والواجبات",records],["الملاحظات",noteRows]].forEach(([name,rows])=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws["!cols"]=rows[0].map((_,i)=>({wch:i===rows[0].length-1?48:20}));XLSX.utils.book_append_sheet(wb,ws,name)});
   XLSX.writeFile(wb,"تقرير-شامل-سجل-التلاميذ-"+today()+".xlsx");
@@ -2337,13 +2365,113 @@ showPage=function(p){
  sp2.apply(this,arguments);
  const pg=$("pageStudents");if(pg)pg.classList.toggle("active",p==="students");
  const b=$("subStudents");if(b)b.classList.toggle("active",p==="students");
- if(p==="students"){fillMg();const cur=$("classAbsence").value;if(data.classes[cur])$("mgClass").value=cur;mgRender();}
+ if(p==="students"){
+  ["Home","Class","Tracking","Records","Settings"].forEach(g=>{const x=$("nav"+g);if(x)x.classList.toggle("active",g==="Class");});
+  ["Class","Tracking","Records","Settings"].forEach(g=>{const x=$("subnav"+g);if(x)x.hidden=(g!=="Class");});
+  fillMg();const cur=$("classAbsence").value;if(data.classes[cur])$("mgClass").value=cur;
+ }
+ mgRender();
 };
-["pageAbsence","pageHomework"].forEach(id=>{const card=document.querySelector("#"+id+">.card:first-child");
- if(card){const d=document.createElement("div");d.className="card-tools";
- d.innerHTML='<button type="button" class="btn gray mini" onclick="openStudents()">👥 إدارة التلاميذ (إضافة / حذف)</button>';card.appendChild(d);}});
 fillMg();mgRender();
 try{if(localStorage.getItem("v2LastPage")==="students")showPage("students")}catch(e){}
+})();
+</script>
+<style>
+#toast{position:fixed;inset-inline:0;bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;pointer-events:none;z-index:60}
+#toast span{background:#12283f;color:#fff;padding:11px 18px;border-radius:14px;font-weight:700;font-size:14px;box-shadow:0 10px 30px #0004;opacity:0;transform:translateY(12px);transition:.22s;max-width:92vw;text-align:center;white-space:pre-line}
+#toast.show span{opacity:1;transform:none}
+</style>
+<div id="toast" role="status" aria-live="polite"><span></span></div>
+<script>
+/* ===== حزمة السرعة: إشعارات سريعة + اختصارات لوحة المفاتيح ===== */
+(function(){
+ const toastEl=document.getElementById("toast"),span=toastEl.querySelector("span");let tm;
+ window.toast=function(msg,ms){span.textContent=msg;toastEl.classList.add("show");clearTimeout(tm);tm=setTimeout(()=>toastEl.classList.remove("show"),ms||2200);};
+ /* رسائل النجاح تصبح إشعاراً غير حاجب بدل نافذة تتطلب النقر على «موافق»؛ أما التحذيرات والأخطاء فتبقى نوافذ عادية */
+ const nativeAlert=window.alert.bind(window);
+ window.alert=function(m){const t=String(m==null?"":m);if(/^(تم|✓|↩️|أُعيد)/.test(t))toast("✓ "+t.replace(/^✓\s*/,""));else nativeAlert(t);};
+ const SHORT="اختصارات لوحة المفاتيح:\nCtrl+S ← حفظ في السجل (الصفحة الحالية)\nCtrl+Enter ← حفظ الملاحظة (داخل الحقل)\nCtrl+Z ← تراجع في ترتيب المقاعد\nAlt+1…8 ← التنقل بين الصفحات\nEsc ← إغلاق النافذة";
+ const pages=["dashboard","absence","homework","seating","notes","noteslog","history","stats"];
+ const cur=()=>{const p=document.querySelector(".page.active");return p?p.id.replace(/^page/,"").toLowerCase():"";};
+ const typing=e=>/^(INPUT|TEXTAREA|SELECT)$/.test((e.target||{}).tagName||"");
+ document.addEventListener("keydown",e=>{
+  const mod=e.ctrlKey||e.metaKey;
+  try{
+   if(e.key==="Escape"){const m=document.getElementById("modal");if(m&&m.style.display==="flex"){closeModal();return;}}
+   if(mod&&(e.key==="s"||e.key==="S")){
+    e.preventDefault();const p=cur();
+    if(p==="absence")saveAttendanceRecord();
+    else if(p==="homework")saveHomeworkRecord();
+    else if(p==="seating")saveSeatingToHistory();
+    else if(p==="notes")saveNote();
+    else toast("لا يوجد إجراء حفظ في هذه الصفحة");
+    return;
+   }
+   if(mod&&e.key==="Enter"&&cur()==="notes"){e.preventDefault();saveNote();setTimeout(()=>document.getElementById("noteText")?.focus(),50);return;}
+   if(mod&&(e.key==="z"||e.key==="Z")&&cur()==="seating"&&!typing(e)){e.preventDefault();seatUndo("arrange");return;}
+   if(e.altKey&&/^[1-8]$/.test(e.key)){e.preventDefault();showPage(pages[+e.key-1]);return;}
+   if(e.key==="?"&&!typing(e))toast(SHORT,6000);
+  }catch(err){console.error(err);}
+ });
+})();
+</script>
+<style>
+/* ===== تنظيم بصري موحّد وبسيط ===== */
+#pgHead{display:flex;align-items:center;gap:12px;margin:2px 2px 14px}
+#pgHead .pg-ic{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:22px;background:color-mix(in srgb,var(--brand) 12%,var(--surface));flex-shrink:0}
+#pgHead h2{margin:0;font-size:clamp(18px,3.4vw,22px);font-weight:800;line-height:1.25;color:var(--ink)}
+#pgHead p{margin:2px 0 0;font-size:13px;color:var(--muted);line-height:1.45}
+label{font-size:13px;font-weight:700;color:var(--muted);margin:12px 0 6px}
+input,select,textarea{min-height:46px;border-radius:12px}
+textarea{min-height:110px}
+.card>strong:first-child{display:block;font-size:16px;font-weight:800;padding-bottom:10px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.card .small{line-height:1.6}
+.btn.primary,.btn.green{min-height:48px;font-size:15px}
+.actions .btn,.btn.gray{min-height:46px}
+#ar_seatTools{display:flex;flex-wrap:wrap;gap:8px;align-items:end;padding:10px;margin:8px 0;border-radius:14px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
+#ar_seatTools .sc-btn{flex:1 1 calc(33% - 8px);min-height:44px;white-space:nowrap}
+#ar_seatTools .sc-f{flex:1 1 calc(50% - 8px)}
+details>summary{min-height:40px;display:flex;align-items:center}
+.empty{border:1px dashed var(--line);background:transparent}
+@media(max-width:600px){.bar .small{display:none}#pgHead .pg-ic{width:38px;height:38px;font-size:19px}#pgHead p{font-size:12px}}
+
+/* ===== v8: أرقام ترتيبية بارزة في لائحة التلاميذ + إدارة التلاميذ داخل ترتيب المقاعد ===== */
+.student-tile .tile-num{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 6px;border-radius:999px;background:var(--brand,#176b87);color:#fff;font-size:15px;font-weight:800;line-height:1;box-shadow:0 2px 6px rgba(23,107,135,.35);flex-shrink:0;font-variant-numeric:tabular-nums}
+.student-tile.selected .tile-num{background:#d93025;box-shadow:0 2px 6px rgba(217,48,37,.4)}
+body.dark .student-tile .tile-num{background:#4fb3d1;color:#06202b;box-shadow:none}
+body.dark .student-tile.selected .tile-num{background:#ff6b63;color:#2a0705}
+@media(max-width:430px){.student-tile .tile-num{min-width:24px;height:24px;font-size:13px}}
+.note-pick.picked{background:#e6f4f8;border-color:var(--brand,#176b87);box-shadow:inset 0 0 0 2px var(--brand,#176b87)}
+.note-pick.picked .tile-state{color:var(--brand,#176b87);font-weight:800}
+.student-tile.note-pick.picked .tile-num{background:var(--brand,#176b87)}
+body.dark .note-pick.picked{background:#173545;border-color:#4fb3d1;box-shadow:inset 0 0 0 2px #4fb3d1}
+body.dark .note-pick.picked .tile-state{color:#9fdcf0}
+</style>
+<script>
+(function(){
+ const M={dashboard:["🏠","الرئيسية","نظرة شاملة على الحضور والواجبات والملاحظات"],
+  absence:["❌","تسجيل الغياب","اختر القسم ثم اضغط على التلميذ الغائب، وبعدها «حفظ في السجل»"],
+  homework:["📚","الواجبات","حدّد من لم ينجز الواجب ثم احفظ العملية في السجل"],
+  seating:["🪑","ترتيب المقاعد","اسحب التلاميذ أو اضغط على اثنين لتبديل مقعديهما"],
+  notes:["📝","تسجيل الملاحظات","دوّن ملاحظات المشاركة والانضباط والصعوبات الدراسية: اختر النوع ثم التلميذ"],
+  noteslog:["📚","الملاحظات المسجلة","تصفّح الملاحظات حسب النوع أو حسب المقعد"],
+  history:["🗂️","السجل التاريخي","العمليات المحفوظة على هذا الجهاز: غياب، واجبات، مقاعد، ملاحظات"],
+  stats:["📈","الإحصائيات والتقارير","مبنية على السجل التاريخي: سجّل الغياب أو الواجبات أولاً لتظهر البيانات"],
+  students:["👥","التلاميذ والأقسام","إضافة التلاميذ وتعديلهم وإدارة الأقسام"],
+  import:["📥","الاستيراد والنسخ الاحتياطي","استيراد القوائم وحفظ نسخة احتياطية من بياناتك"]};
+ const host=document.createElement("div");host.id="pgHead";
+ const first=document.getElementById("pageAbsence");
+ if(!first||!first.parentNode)return;
+ first.parentNode.insertBefore(host,first);
+ function upd(p){
+  if(!p){const a=document.querySelector(".page.active");p=a?a.id.replace(/^page/,"").toLowerCase():"absence";}
+  const m=M[p];if(!m||p==="dashboard"){host.style.display="none";return;}
+  host.style.display="flex";
+  host.innerHTML='<div class="pg-ic" aria-hidden="true">'+m[0]+'</div><div><h2>'+m[1]+'</h2><p>'+m[2]+'</p></div>';
+ }
+ const sp=window.showPage;
+ window.showPage=function(p){const r=sp.apply(this,arguments);upd(p);return r;};
+ upd();
 })();
 </script>
 </body>
