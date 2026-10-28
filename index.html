@@ -2678,5 +2678,135 @@ if(loadFail){
   }catch(e){console.error(e);status("⚠ خطأ في تهيئة Firebase: "+e.message);}
 }
 </script>
+<style id="selpicker-css">
+.sel-native{display:none!important}
+.sel-btn{width:100%;min-height:46px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:.6rem .85rem;border:1px solid #BAC5D3;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-size:max(16px,1rem);cursor:pointer;text-align:start;transition:border-color .15s,box-shadow .15s}
+body.dark .sel-btn{border-color:#3F5473}
+.sel-btn:hover{border-color:var(--action)}
+.sel-btn[aria-expanded="true"]{border-color:var(--action);box-shadow:0 0 0 3px color-mix(in srgb,var(--action) 18%,transparent)}
+.sel-btn .sel-txt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.sel-btn.placeholder .sel-txt{color:var(--muted);font-weight:400}
+.sel-btn svg{width:18px;height:18px;flex-shrink:0;color:var(--muted);fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sel-btn:disabled{opacity:.55;cursor:default}
+.sel-ov{position:fixed;inset:0;z-index:90;background:rgba(10,20,36,.55);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;animation:selFade .15s ease-out}
+.sel-sheet{width:100%;max-width:520px;max-height:min(78dvh,640px);display:flex;flex-direction:column;background:var(--surface);color:var(--ink);border-radius:22px 22px 0 0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px rgba(0,0,0,.35);animation:selUp .22s ease-out}
+.sel-grab{width:42px;height:4px;border-radius:4px;background:var(--line);margin:2px auto 10px;flex-shrink:0}
+.sel-title{font-weight:800;font-size:1rem;padding:2px 4px 10px;flex-shrink:0}
+.sel-search{margin-bottom:8px;flex-shrink:0}
+.sel-list{overflow-y:auto;overscroll-behavior:contain;display:grid;gap:4px;padding:2px;min-height:0}
+.sel-item{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:48px;padding:10px 14px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--ink);font:inherit;font-weight:600;text-align:start;cursor:pointer;overflow-wrap:anywhere}
+.sel-item:hover,.sel-item:focus-visible{background:color-mix(in srgb,var(--ink) 7%,transparent)}
+.sel-item.on{background:color-mix(in srgb,var(--action) 12%,transparent);border-color:color-mix(in srgb,var(--action) 40%,transparent)}
+.sel-item .ck{width:20px;height:20px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;color:#fff;background:var(--action);font-size:12px;font-weight:900}
+.sel-empty{padding:18px;text-align:center;color:var(--muted);font-size:.9rem}
+@keyframes selFade{from{opacity:0}to{opacity:1}}
+@keyframes selUp{from{transform:translateY(30px);opacity:.5}to{transform:none;opacity:1}}
+@media(min-width:700px){.sel-ov{align-items:center;padding:20px}.sel-sheet{border-radius:20px;max-height:min(70dvh,560px)}}
+@media print{.sel-ov{display:none!important}}
+</style>
+<script>
+/* ===== قائمة اختيار احترافية: تستبدل القوائم المنسدلة الأصلية بنافذة اختيار لا تُقتطع أبداً ===== */
+(function(){
+  const valDesc=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,"value");
+  let overlay=null,activeSel=null;
+  const CHEV='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+  function labelText(sel){
+    const wrap=sel.parentElement,l=wrap&&wrap.querySelector(":scope > label, :scope > div > label");
+    let t=l?(l.childNodes[0]?l.childNodes[0].textContent:l.textContent):"";
+    if(!t){const p=sel.closest(".row>div, .card");const l2=p&&p.querySelector("label");t=l2?l2.childNodes[0].textContent:"";}
+    return (t||"").trim()||"اختر";
+  }
+  function refresh(sel){
+    const b=sel._btn;if(!b)return;
+    const o=sel.options[sel.selectedIndex],t=o?o.textContent.trim():"";
+    b.querySelector(".sel-txt").textContent=t||"اختر...";
+    b.classList.toggle("placeholder",!t);
+    b.disabled=!sel.options.length;
+  }
+  function closePicker(){
+    if(!overlay)return;
+    overlay.remove();overlay=null;
+    document.removeEventListener("keydown",onKey,true);
+    document.documentElement.style.overflow="";
+    if(activeSel&&activeSel._btn){activeSel._btn.setAttribute("aria-expanded","false");try{activeSel._btn.focus({preventScroll:true});}catch(e){}}
+    activeSel=null;
+  }
+  function onKey(e){
+    if(e.key==="Escape"){e.preventDefault();e.stopPropagation();closePicker();return;}
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+      const items=[...overlay.querySelectorAll(".sel-item")];if(!items.length)return;
+      e.preventDefault();
+      let i=items.indexOf(document.activeElement);
+      i=e.key==="ArrowDown"?Math.min(items.length-1,i+1):Math.max(0,i<0?0:i-1);
+      items[i].focus();
+    }
+  }
+  function choose(sel,value){
+    sel.value=value;
+    sel.dispatchEvent(new Event("change",{bubbles:true}));
+    closePicker();
+  }
+  function openPicker(sel){
+    closePicker();activeSel=sel;
+    sel._btn.setAttribute("aria-expanded","true");
+    const opts=[...sel.options];
+    overlay=document.createElement("div");overlay.className="sel-ov";
+    const sheet=document.createElement("div");sheet.className="sel-sheet";sheet.setAttribute("role","dialog");sheet.setAttribute("aria-modal","true");
+    const title=labelText(sel);
+    sheet.innerHTML='<div class="sel-grab"></div><div class="sel-title"></div>';
+    sheet.querySelector(".sel-title").textContent=title;
+    sheet.setAttribute("aria-label",title);
+    const list=document.createElement("div");list.className="sel-list";list.setAttribute("role","listbox");
+    let search=null;
+    if(opts.length>7){
+      search=document.createElement("input");search.type="search";search.className="sel-search";search.placeholder="🔎 بحث...";
+      search.addEventListener("input",()=>fill(search.value));
+      sheet.appendChild(search);
+    }
+    sheet.appendChild(list);overlay.appendChild(sheet);
+    function fill(q){
+      q=(q||"").trim().toLocaleLowerCase();list.innerHTML="";
+      const shown=opts.filter(o=>!q||o.textContent.toLocaleLowerCase().includes(q));
+      if(!shown.length){const d=document.createElement("div");d.className="sel-empty";d.textContent="لا توجد نتيجة";list.appendChild(d);return;}
+      shown.forEach(o=>{
+        const b=document.createElement("button");b.type="button";
+        const on=o.value===sel.value;
+        b.className="sel-item"+(on?" on":"");b.setAttribute("role","option");b.setAttribute("aria-selected",on?"true":"false");
+        const s=document.createElement("span");s.textContent=o.textContent.trim();b.appendChild(s);
+        if(on){const c=document.createElement("span");c.className="ck";c.textContent="✓";b.appendChild(c);}
+        b.addEventListener("click",()=>choose(sel,o.value));
+        list.appendChild(b);
+      });
+    }
+    fill("");
+    overlay.addEventListener("mousedown",e=>{if(e.target===overlay)closePicker();});
+    overlay.addEventListener("touchstart",e=>{if(e.target===overlay){e.preventDefault();closePicker();}},{passive:false});
+    document.body.appendChild(overlay);
+    document.documentElement.style.overflow="hidden";
+    document.addEventListener("keydown",onKey,true);
+    const cur=list.querySelector(".sel-item.on");
+    if(cur){try{cur.scrollIntoView({block:"center"});}catch(e){}if(!matchMedia("(pointer:coarse)").matches||!search)cur.focus({preventScroll:true});}
+    else if(search&&!matchMedia("(pointer:coarse)").matches)search.focus();
+  }
+  function enhance(sel){
+    if(sel._enh||sel.multiple||sel.size>1)return;
+    sel._enh=true;
+    const b=document.createElement("button");b.type="button";b.className="sel-btn";
+    b.setAttribute("aria-haspopup","dialog");b.setAttribute("aria-expanded","false");
+    b.innerHTML='<span class="sel-txt"></span>'+CHEV;
+    sel.parentNode.insertBefore(b,sel);
+    sel.classList.add("sel-native");sel._btn=b;
+    Object.defineProperty(sel,"value",{configurable:true,get(){return valDesc.get.call(this);},set(v){valDesc.set.call(this,v);refresh(this);}});
+    new MutationObserver(()=>refresh(sel)).observe(sel,{childList:true,subtree:true,characterData:true});
+    sel.addEventListener("change",()=>refresh(sel));
+    b.addEventListener("click",()=>openPicker(sel));
+    refresh(sel);
+    const t=labelText(sel);if(t&&t!=="اختر")b.setAttribute("aria-label",t);
+  }
+  function scan(root){(root.querySelectorAll?root.querySelectorAll("select"):[]).forEach(enhance);if(root.tagName==="SELECT")enhance(root);}
+  scan(document);
+  new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1)scan(n);}))).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
 </body>
 </html>
