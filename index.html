@@ -718,6 +718,7 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
   <div class="brand"><span class="mark" aria-hidden="true">φ</span><div><h1>سجل الأستاذ</h1><div class="sub"> الغياب والواجبات والتتبع</div></div></div>
   <div class="header-tools">
     <span id="saveStatus" class="save-status" role="status">✓ الحفظ المحلي مفعّل</span>
+    <button class="theme-toggle" id="authBtn" onclick="cloudAuthToggle()" aria-label="تسجيل الدخول بحساب Google" title="تسجيل الدخول بحساب Google">☁️</button>
     <button class="theme-toggle" id="themeToggle" onclick="toggleDarkMode()" aria-label="تغيير المظهر">🌙</button>
   </div>
 </header>
@@ -903,6 +904,17 @@ input,select,textarea{font-size:max(16px,1rem);min-height:2.75rem;padding:.6rem 
 </div>
 
   <div id="pageImport" class="page">
+  <div class="card" id="cloudCard">
+    <strong>☁️ الحساب والمزامنة السحابية</strong>
+    <p class="small">سجّل الدخول بحساب Google لحفظ بياناتك في قاعدة بيانات Firebase واسترجاعها من أي هاتف أو حاسوب. يبقى التطبيق يعمل دون اتصال، وتُرفع التغييرات تلقائياً عند الاتصال.</p>
+    <div id="cloudUser" class="alert-item" style="display:none;background:#edfff6;border-color:#9ad9bd;color:#126444"></div>
+    <div id="cloudStatus" class="small" role="status" style="margin-top:8px">غير متصل بالسحابة.</div>
+    <button class="btn primary" id="cloudLoginBtn" style="width:100%;margin-top:10px" onclick="cloudSignIn()">🔐 تسجيل الدخول بحساب Google</button>
+    <div class="actions" id="cloudActions" style="display:none">
+      <button class="btn green" onclick="cloudSyncNow()">🔄 مزامنة الآن</button>
+      <button class="btn danger" onclick="cloudSignOut()">تسجيل الخروج</button>
+    </div>
+  </div>
   <div class="card">
     <strong>📥 لائحة التلاميذ</strong>
     <p class="small">استورد ملفاً نصياً (.txt) أو الصق الأسماء مباشرة (اسم في كل سطر)، ثم حدّد هل تريد إضافة الأسماء أم استبدال لائحة القسم المختار.</p>
@@ -2473,6 +2485,122 @@ body.dark .note-pick.picked .tile-state{color:#9fdcf0}
  window.showPage=function(p){const r=sp.apply(this,arguments);upd(p);return r;};
  upd();
 })();
+</script>
+<script type="module">
+/* ===== تسجيل الدخول عبر Google + مزامنة Firestore ===== */
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import {getFirestore,doc,getDoc,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+/* ⚠️ ضع هنا إعدادات مشروعك: Firebase Console ← إعدادات المشروع ← تطبيقاتك (Web) */
+const firebaseConfig={
+  apiKey:"YOUR_API_KEY",
+  authDomain:"YOUR_PROJECT_ID.firebaseapp.com",
+  projectId:"YOUR_PROJECT_ID",
+  storageBucket:"YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId:"YOUR_SENDER_ID",
+  appId:"YOUR_APP_ID"
+};
+
+const $=id=>document.getElementById(id);
+const KEYS=["absencePhysics","absencePhysicsHistory","absencePhysicsNotes","absencePhysicsNoteTypes","absencePhysicsHiddenNoteTypes","absencePhysicsSeating"];
+const configured=!/YOUR_/.test(firebaseConfig.apiKey+firebaseConfig.projectId);
+let auth,db,user=null,applying=false,timer=null,ready=false;
+
+function status(msg){const e=$("cloudStatus");if(e)e.textContent=msg;}
+function say(msg){if(window.toast)window.toast(msg);else alert(msg);}
+function collect(){const o={};KEYS.forEach(k=>o[k]=localStorage.getItem(k));return o;}
+function hasLocal(o){return Object.values(o).some(v=>v!==null);}
+function ref(){return doc(db,"users",user.uid);}
+
+function renderUI(){
+  const logged=!!user;
+  $("authBtn").textContent=logged?"✅":"☁️";
+  $("authBtn").title=logged?"متصل: "+(user.email||""):"تسجيل الدخول بحساب Google";
+  $("cloudLoginBtn").style.display=logged?"none":"block";
+  $("cloudActions").style.display=logged?"grid":"none";
+  const u=$("cloudUser");u.style.display=logged?"block":"none";
+  if(logged)u.textContent="👤 "+(user.displayName||"")+" — "+(user.email||"");
+}
+
+async function push(){
+  if(!user||applying||!ready)return;
+  const c=collect();if(!hasLocal(c))return;
+  try{
+    status("⏳ جارٍ الرفع إلى السحابة...");
+    await setDoc(ref(),{payload:JSON.stringify(c),updatedAt:serverTimestamp()});
+    status("✓ آخر مزامنة: "+new Date().toLocaleTimeString("ar-MA"));
+  }catch(e){console.error(e);status("⚠ تعذّرت المزامنة: "+(e.code||e.message));}
+}
+function schedule(){clearTimeout(timer);timer=setTimeout(push,1500);}
+
+/* أي حفظ لمفاتيح التطبيق يُرفع تلقائياً بعد 1.5 ثانية */
+const origSet=Storage.prototype.setItem;
+Storage.prototype.setItem=function(k,v){
+  origSet.apply(this,arguments);
+  if(this===localStorage&&KEYS.includes(k)&&!applying&&user)schedule();
+};
+
+async function pullOrPush(){
+  ready=false;
+  try{
+    status("⏳ جارٍ الاتصال بقاعدة البيانات...");
+    const snap=await getDoc(ref());
+    const local=collect();
+    if(snap.exists()&&snap.data().payload){
+      const remoteStr=snap.data().payload;
+      if(remoteStr!==JSON.stringify(local)){
+        const useCloud=!hasLocal(local)||confirm("وُجدت بيانات محفوظة في حسابك السحابي.\n\nموافق = تحميلها واستبدال بيانات هذا الجهاز.\nإلغاء = الاحتفاظ ببيانات هذا الجهاز ورفعها إلى السحابة.");
+        if(useCloud){
+          applying=true;
+          const r=JSON.parse(remoteStr);
+          KEYS.forEach(k=>{if(r[k]===null||r[k]===undefined)localStorage.removeItem(k);else origSet.call(localStorage,k,r[k]);});
+          try{localStorage.removeItem("absencePhysicsDraft");}catch(e){}
+          status("✓ تم تحميل بياناتك من السحابة، جارٍ إعادة التحميل...");
+          location.reload();return;
+        }
+      }else{status("✓ البيانات متطابقة مع السحابة.");}
+    }
+    ready=true;
+    if(hasLocal(local)&&(!snap.exists()||snap.data().payload!==JSON.stringify(local)))await push();
+    else status("✓ متصل بالسحابة.");
+  }catch(e){console.error(e);ready=false;status("⚠ تعذّر الاتصال بقاعدة البيانات: "+(e.code||e.message)+" — تحقق من قواعد Firestore.");}
+}
+
+window.cloudSignIn=async function(){
+  if(!configured){say("أضف إعدادات Firebase في الكود أولاً (المتغير firebaseConfig).");return;}
+  const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:"select_account"});
+  try{await signInWithPopup(auth,provider);}
+  catch(e){
+    if(e.code==="auth/popup-blocked"||e.code==="auth/operation-not-supported-in-this-environment"){try{await signInWithRedirect(auth,provider);}catch(e2){status("⚠ "+(e2.code||e2.message));}}
+    else if(e.code!=="auth/popup-closed-by-user"&&e.code!=="auth/cancelled-popup-request"){status("⚠ فشل تسجيل الدخول: "+(e.code||e.message));say("فشل تسجيل الدخول: "+(e.code||e.message));}
+  }
+};
+window.cloudSignOut=async function(){
+  if(!confirm("تسجيل الخروج؟ ستبقى بياناتك محفوظة على هذا الجهاز وفي السحابة."))return;
+  try{await signOut(auth);}catch(e){status("⚠ "+(e.code||e.message));}
+};
+window.cloudSyncNow=async function(){if(!user)return;ready=true;await push();};
+window.cloudAuthToggle=function(){
+  if(user){if(typeof showPage==="function")showPage("import");}
+  else window.cloudSignIn();
+};
+
+renderUI();
+if(!configured){
+  status("⚠ لم تُضبط إعدادات Firebase بعد. عدّل المتغير firebaseConfig في آخر الملف.");
+}else{
+  try{
+    const app=initializeApp(firebaseConfig);
+    auth=getAuth(app);auth.languageCode="ar";db=getFirestore(app);
+    getRedirectResult(auth).catch(e=>status("⚠ "+(e.code||e.message)));
+    onAuthStateChanged(auth,async u=>{
+      user=u||null;renderUI();
+      if(user){await pullOrPush();}
+      else{ready=false;status("غير متصل بالسحابة. التطبيق يعمل محلياً على هذا الجهاز.");}
+    });
+  }catch(e){console.error(e);status("⚠ خطأ في تهيئة Firebase: "+e.message);}
+}
 </script>
 </body>
 </html>
