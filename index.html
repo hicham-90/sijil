@@ -2397,7 +2397,7 @@ try{if(localStorage.getItem("v2LastPage")==="students")showPage("students")}catc
 <script>
 /* ===== حزمة السرعة: إشعارات سريعة + اختصارات لوحة المفاتيح ===== */
 (function(){
- const toastEl=document.getElementById("toast"),span=toastEl.querySelector("span");let tm;
+ const toastEl=document.getElementById("toast");let span=toastEl.querySelector("span");if(!span){span=document.createElement("span");toastEl.appendChild(span);}let tm;
  window.toast=function(msg,ms){span.textContent=msg;toastEl.classList.add("show");clearTimeout(tm);tm=setTimeout(()=>toastEl.classList.remove("show"),ms||2200);};
  /* رسائل النجاح تصبح إشعاراً غير حاجب بدل نافذة تتطلب النقر على «موافق»؛ أما التحذيرات والأخطاء فتبقى نوافذ عادية */
  const nativeAlert=window.alert.bind(window);
@@ -2486,20 +2486,29 @@ body.dark .note-pick.picked .tile-state{color:#9fdcf0}
  upd();
 })();
 </script>
+<script>
+window.cloudAuthToggle=window.cloudSignIn=window.cloudSignOut=window.cloudSyncNow=function(){try{toast("⏳ جارٍ تحميل Firebase... تأكد من الاتصال بالإنترنت ثم أعد المحاولة.",4000)}catch(e){}};
+</script>
 <script type="module">
 /* ===== تسجيل الدخول عبر Google + مزامنة Firestore ===== */
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import {getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import {getFirestore,doc,getDoc,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+let initializeApp,getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut,getFirestore,doc,getDoc,setDoc,serverTimestamp,loadFail=null;
+try{
+  const B="https://www.gstatic.com/firebasejs/10.14.1/";
+  const [a,b,c]=await Promise.all([import(B+"firebase-app.js"),import(B+"firebase-auth.js"),import(B+"firebase-firestore.js")]);
+  ({initializeApp}=a);
+  ({getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut}=b);
+  ({getFirestore,doc,getDoc,setDoc,serverTimestamp}=c);
+}catch(e){loadFail=e;console.error(e);}
 
 /* ⚠️ ضع هنا إعدادات مشروعك: Firebase Console ← إعدادات المشروع ← تطبيقاتك (Web) */
 const firebaseConfig={
-  apiKey:"YOUR_API_KEY",
-  authDomain:"YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:"YOUR_PROJECT_ID",
-  storageBucket:"YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId:"YOUR_SENDER_ID",
-  appId:"YOUR_APP_ID"
+  apiKey:"AIzaSyC-J0pr_rQefflyA0QBWn82uVBTIeRNBkA",
+  authDomain:"ostad-cloud-76398.firebaseapp.com",
+  databaseURL:"https://ostad-cloud-76398-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"ostad-cloud-76398",
+  storageBucket:"ostad-cloud-76398.firebasestorage.app",
+  messagingSenderId:"144542209487",
+  appId:"1:144542209487:web:b4305880e467af7eb4aeba"
 };
 
 const $=id=>document.getElementById(id);
@@ -2508,7 +2517,7 @@ const configured=!/YOUR_/.test(firebaseConfig.apiKey+firebaseConfig.projectId);
 let auth,db,user=null,applying=false,timer=null,ready=false;
 
 function status(msg){const e=$("cloudStatus");if(e)e.textContent=msg;}
-function say(msg){if(window.toast)window.toast(msg);else alert(msg);}
+function say(msg){status(msg);try{window.toast(String(msg),5000);}catch(e){try{window.prompt?console.log(msg):0}catch(_){}}}
 function collect(){const o={};KEYS.forEach(k=>o[k]=localStorage.getItem(k));return o;}
 function hasLocal(o){return Object.values(o).some(v=>v!==null);}
 function ref(){return doc(db,"users",user.uid);}
@@ -2568,7 +2577,7 @@ async function pullOrPush(){
 }
 
 window.cloudSignIn=async function(){
-  if(!configured){say("أضف إعدادات Firebase في الكود أولاً (المتغير firebaseConfig).");return;}
+  if(loadFail||!auth){if(typeof showPage==="function")showPage("import");say(loadFail?"تعذّر تحميل مكتبات Firebase: تحقق من الاتصال بالإنترنت.":"أضف إعدادات Firebase في الكود أولاً (المتغير firebaseConfig).");return;}
   const provider=new GoogleAuthProvider();provider.setCustomParameters({prompt:"select_account"});
   try{await signInWithPopup(auth,provider);}
   catch(e){
@@ -2585,9 +2594,12 @@ window.cloudAuthToggle=function(){
   if(user){if(typeof showPage==="function")showPage("import");}
   else window.cloudSignIn();
 };
+window.cloudSignOut=window.cloudSignOut;
 
 renderUI();
-if(!configured){
+if(loadFail){
+  status("⚠ تعذّر تحميل مكتبات Firebase (تحقق من الإنترنت أو من حجب gstatic.com): "+loadFail.message);
+}else if(!configured){
   status("⚠ لم تُضبط إعدادات Firebase بعد. عدّل المتغير firebaseConfig في آخر الملف.");
 }else{
   try{
