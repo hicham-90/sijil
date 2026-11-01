@@ -2810,7 +2810,7 @@ function renderUI(){
   $("authBtn").title=logged?"متصل: "+(user.email||""):"تسجيل الدخول بحساب Google";
   $("cloudLoginBtn").style.display=logged?"none":"block";
   $("cloudActions").style.display=logged?"grid":"none";
-  const u=$("cloudUser");u.style.display=logged?"block":"none";
+  const u=$("cloudUser");u.style.display=logged?"flex":"none";
   u.textContent="";
   if(logged){
     const email=user.email||"";
@@ -2855,14 +2855,14 @@ async function pullOrPush(){
     const local=collect(),dirty=isDirty();
     const remoteStr=snap.exists()?(snap.data().payload||null):null;
     if(remoteStr&&remoteStr!==JSON.stringify(local)&&(!dirty||!hasLocal(local))){
-      applying=true;window.__cloudApplying=true;
       if(hasLocal(local)){try{origSet.call(localStorage,"absencePhysicsBeforeCloudLoad",JSON.stringify({savedAt:new Date().toISOString(),local}));}catch(e){}}
-      const r=JSON.parse(remoteStr);
-      KEYS.forEach(k=>{if(r[k]===null||r[k]===undefined)localStorage.removeItem(k);else origSet.call(localStorage,k,r[k]);});
       clearDirty();
       try{localStorage.removeItem("absencePhysicsDraft");}catch(e){}
-      status("✓ تم تحميل بياناتك من السحابة، جارٍ إعادة التحميل...");
-      location.reload();return;
+      /* تطبيق بيانات السحابة مباشرة دون إعادة تحميل الصفحة (إعادة التحميل كانت تسبب حلقة لا نهائية) */
+      try{applyRemote(remoteStr);}catch(e){console.error(e);}
+      status("✓ تم تحميل بياناتك من السحابة — "+new Date().toLocaleTimeString("ar-MA"));
+      try{window.toast("☁️ تم تحميل بياناتك من السحابة");}catch(e){}
+      ready=true;startListener();return;
     }
     ready=true;
     if(hasLocal(local)&&remoteStr!==JSON.stringify(local))await push();
